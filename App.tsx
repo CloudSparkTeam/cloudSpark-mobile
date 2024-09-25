@@ -1,48 +1,43 @@
-import React, {useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
-import axios from 'axios';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import React from 'react';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
+import Overlay from './src/components/Overlay';
+import Button from './src/components/Button';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [message, setMessage] = useState<string | null>(null); // Estado para armazenar a resposta do backend
+  const handleVoltarPress = () => {
+    console.log('Botão Voltar pressionado!');
+  };
 
-  useEffect(() => {
-    // Fazendo a requisição ao backend
-    axios.get('http://10.0.2.2:3002/') // Acessa a rota '/' para verificar o backend
-      .then(response => {
-        setMessage(response.data); // Armazena a resposta do backend no estado
-      })
-      .catch(error => {
-        console.error('Erro ao conectar com o backend:', error);
-        setMessage('Erro ao conectar com o backend.'); // Exibe uma mensagem de erro, se ocorrer
-      });
-  }, []);
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const handleAvancarPress = () => {
+    console.log('Botão Avançar pressionado!');
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={backgroundStyle.backgroundColor}/>
-      <ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
-        <View style={{backgroundColor: isDarkMode ? Colors.black : Colors.white}}>
-          <Text style={styles.title}>Verificação do Backend</Text>
-          {/* Exibe a resposta do backend */}
-          <Text>{message ? message : 'Conectando ao backend...'}</Text>
-        </View>
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <Overlay />
+      <View style={styles.buttonContainer}>
+        <Button color="yellow" onPress={handleVoltarPress}>
+          Voltar
+        </Button>
+        <Button color="yellow" onPress={handleAvancarPress}>
+          Avançar
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: 'lightblue', // Apenas para teste, pode ser removido
+    justifyContent: 'center', 
+    alignItems: 'center', 
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center', 
+    marginTop: 20,
   },
 });
 
