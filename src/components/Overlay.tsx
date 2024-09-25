@@ -60,16 +60,18 @@ const overlay: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
+        backgroundColor: '#fff', // Fundo branco
     },
     alignBottom: {
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
+
     },
     botao: {
         width: width * 0.15,
         height: width * 0.15,
-        backgroundColor: '#fffe',
+        backgroundColor: '#fff',
         borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
         width: 'auto',
         height: 'auto',
         borderRadius: 30,
-        backgroundColor: '#000a',
+        backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: '#0004',
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     botaoGenerico: {
         width: width * 0.2,
         height: width * 0.2,
-        backgroundColor: '#fffe',
+        backgroundColor: '#FFD700',
         borderRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
