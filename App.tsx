@@ -2,6 +2,7 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Overlay from './src/components/Overlay';
 import Button from './src/components/Button';
+import GoogleMaps from './src/components/GoogleMaps';
 
 function App(): React.JSX.Element {
   const handleVoltarPress = () => {
@@ -14,6 +15,7 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
+      <GoogleMaps />
       <Overlay />
       <View style={styles.buttonContainer}>
         <Button color="yellow" onPress={handleVoltarPress}>
@@ -30,7 +32,6 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightblue', // Apenas para teste, pode ser removido
     justifyContent: 'center', 
     alignItems: 'center', 
   },
@@ -40,5 +41,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
 export default App;
