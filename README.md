@@ -1,83 +1,66 @@
 # cloudSpark-mobile
-Projeto frontend mobile
+# Aplicativo Mobile
 
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Este serviço é responsável por estruturar a plataforma para dispositivos móveis, utilizando **React Native CLI**.
 
-# Getting Started
+## Pré-requisitos
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Antes de rodar o projeto, certifique-se de ter o seguinte configurado:
 
-## Step 1: Start the Metro Server
+- **Node.js** e **npm** instalados. Se ainda não tiver, acesse [Node.js](https://nodejs.org/pt) e faça o download da versão mais recente.
+- **Android Studio** com o **Android SDK** instalado, ou um emulador/simulador de dispositivo configurado no Visual Studio Code.
+- Alternativamente, você pode utilizar um **dispositivo físico** com Android, conectado via cabo USB e com a depuração USB ativada.
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Como Rodar
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Siga os passos abaixo para rodar o aplicativo mobile localmente:
 
-```bash
-# using npm
-npm start
+1. **Clone o repositório:**
 
-# OR using Yarn
-yarn start
-```
+   Clone o projeto utilizando o comando:
 
-## Step 2: Start your Application
+   ```bash
+   git clone https://github.com/CloudSparkTeam/cloudSpark-mobile.git
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+2. **Navegue até a pasta do projeto:**
 
-### For Android
+   Vá até o diretório onde o repositório foi clonado:
+   ```bash
+   cd cloudSpark-mobile
 
-```bash
-# using npm
-npm run android
+3. **Instale as dependências:**
 
-# OR using Yarn
-yarn android
-```
+   Execute o seguinte comando para instalar todas as dependências necessárias:
+   ```bash
+   npm install
 
-### For iOS
+4. **Configuração do Emulador ou Dispositivo Físico:**
 
-```bash
-# using npm
-npm run ios
+   Usando um Emulador Android:
+   Certifique-se de que o Android Studio esteja configurado com o Android SDK.
 
-# OR using Yarn
-yarn ios
-```
+   Inicie um emulador Android pelo Android Studio ou pelo terminal:
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+   ```bash
+   npx react-native run-android
+   ```
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+   Usando um Dispositivo Físico:
+   Conecte seu dispositivo Android ao computador via cabo USB.
 
-## Step 3: Modifying your App
+   Ative a depuração USB nas configurações do desenvolvedor no seu dispositivo.
 
-Now that you have successfully run the app, let's modify it.
+   Verifique se o dispositivo está listado com o comando:
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+   ```bash
+   adb devices
+   ```
+   Inicie o aplicativo no dispositivo conectado:
+   ```bash
+   npx react-native run-android
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+5. **Inicie o aplicativo:**
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-
+   Com o emulador ou dispositivo físico configurado e o ambiente pronto, inicie o aplicativo com o comando:
+   ```bash
+   npm start
