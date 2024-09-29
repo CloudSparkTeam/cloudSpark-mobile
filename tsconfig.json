@@ -1,0 +1,12 @@
+{
+  // "compilerOptions": {
+  //   "target": "es5",
+  //   "module": "esnext",
+  //   "jsx": "react",
+  //   "esModuleInterop": true,
+  //   "strict": true,
+  //   "moduleResolution": "node",
+  //   "resolveJsonModule": true
+  // },
+  "extends": "@react-native/typescript-config/tsconfig.json"
+}
