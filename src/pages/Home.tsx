@@ -1,16 +1,28 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 import Overlay from '../components/Overlay';
 import GoogleMaps from '../components/GoogleMaps';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
-function Home(): React.JSX.Element {
+interface HomeProps {
+  navigation: NavigationProp<any>;
+}
+
+function Home({ navigation }: HomeProps): React.JSX.Element {
+  const handleIconPress = () => {
+    navigation.navigate('Profile'); 
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <GoogleMaps />
-      <Overlay style={styles.overlay} />
-      <View style={styles.buttonContainer}>
-        {/* Botões, se houver */}
+      <View style={styles.overlay}>
+        <Overlay />
       </View>
+      <TouchableOpacity style={styles.iconContainer} onPress={handleIconPress}>
+        <Icon name="person-circle" size={40} color="black" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -22,16 +34,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
   overlay: {
-    bottom: 0,
+    marginBottom: 10,
     left: 0,
     right: 0,
     zIndex: 2,
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: 20,  
+    left: 20, 
+    zIndex: 3, 
   },
 });
 

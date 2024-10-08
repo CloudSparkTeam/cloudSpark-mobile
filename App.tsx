@@ -1,44 +1,33 @@
+import 'react-native-gesture-handler'; []
 import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
-import Overlay from './src/components/Overlay';
-import Button from './src/components/Button';
-import GoogleMaps from './src/components/GoogleMaps';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from './src/pages/Home';
+import Profile from './src/pages/Profile';
+
+export type RootStackParamList = {
+  Home: undefined;
+  Profile: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 function App(): React.JSX.Element {
-  const handleVoltarPress = () => {
-    console.log('Botão Voltar pressionado!');
-  };
-
-  const handleAvancarPress = () => {
-    console.log('Botão Avançar pressionado!');
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      <GoogleMaps />
-      <Overlay />
-      <View style={styles.buttonContainer}>
-        <Button color="yellow" onPress={handleVoltarPress}>
-          Voltar
-        </Button>
-        <Button color="yellow" onPress={handleAvancarPress}>
-          Avançar
-        </Button>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Profile" 
+          component={Profile} 
+          />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center', 
-    marginTop: 20,
-  },
-});
 export default App;
