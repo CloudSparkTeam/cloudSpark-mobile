@@ -103,7 +103,7 @@ function GoogleMaps(): React.JSX.Element {
           }
         }}
         style={{ width: width, height: height }}
-        region={regiao}
+        region={regiao || { latitude: 0, longitude: 0, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }}
         zoomEnabled={true}
         minZoomLevel={1}
         showsUserLocation={true}
