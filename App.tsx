@@ -1,13 +1,10 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
-import Overlay from './src/components/Overlay';
+import { SafeAreaView, StyleSheet, View, Image } from 'react-native';
 import Button from './src/components/Button';
-import GoogleMaps from './src/components/GoogleMaps';
+import Input from './src/components/Input';
+
 
 function App(): React.JSX.Element {
-  const handleVoltarPress = () => {
-    console.log('Botão Voltar pressionado!');
-  };
 
   const handleAvancarPress = () => {
     console.log('Botão Avançar pressionado!');
@@ -15,14 +12,18 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoogleMaps />
-      <Overlay />
+      <Image
+        source={require('./src/assets/LOGO.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
+      <Input label="Login:" placeholder="Digite seu login" secureTextEntry={false}/>
+      <Input label="Senha:" placeholder="Digite sua senha" secureTextEntry={true}/>
+
       <View style={styles.buttonContainer}>
-        <Button color="yellow" onPress={handleVoltarPress}>
-          Voltar
-        </Button>
         <Button color="yellow" onPress={handleAvancarPress}>
-          Avançar
+          Entrar
         </Button>
       </View>
     </SafeAreaView>
@@ -32,13 +33,20 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'center', 
+    justifyContent: 'center',
     marginTop: 20,
   },
 });
+
 export default App;
