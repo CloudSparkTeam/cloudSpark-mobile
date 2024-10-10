@@ -21,7 +21,7 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
         <Overlay />
       </View>
       <TouchableOpacity style={styles.iconContainer} onPress={handleIconPress}>
-        <Icon name="person-circle" size={40} color="black" />
+        <Icon name="person-circle" size={60} color="darkblue" />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    top: 20,  
-    left: 20, 
+    top: 15,  
+    left: 15, 
     zIndex: 3, 
   },
 });
