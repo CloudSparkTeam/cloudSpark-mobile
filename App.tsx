@@ -1,44 +1,28 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
-import Overlay from './src/components/Overlay';
-import Button from './src/components/Button';
-import GoogleMaps from './src/components/GoogleMaps';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Login from './src/pages/Login';
+import Home from './src/pages/Home';
+
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  const handleVoltarPress = () => {
-    console.log('Botão Voltar pressionado!');
-  };
-
-  const handleAvancarPress = () => {
-    console.log('Botão Avançar pressionado!');
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      <GoogleMaps />
-      <Overlay />
-      <View style={styles.buttonContainer}>
-        <Button color="yellow" onPress={handleVoltarPress}>
-          Voltar
-        </Button>
-        <Button color="yellow" onPress={handleAvancarPress}>
-          Avançar
-        </Button>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen 
+          name="Login" 
+          component={Login} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Home" 
+          component={Home}
+          options={{ headerShown: true }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center', 
-    marginTop: 20,
-  },
-});
 export default App;
