@@ -1,14 +1,39 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View, Image } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { useNavigation } from '@react-navigation/native';
 
 function Login(): React.JSX.Element {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
 
-  const handleAvancarPress = () => {
-    navigation.navigate('Home'); 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3002/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha }),
+      });
+
+      const data = await response.json();
+
+      if (data.token) {
+        // Armazena o token usando AsyncStorage
+        await AsyncStorage.setItem('userToken', data.token);
+
+        // Navega para a tela "Home" com o token armazenado
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Erro', data.error || 'Login falhou');
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível conectar ao servidor');
+    }
   };
 
   return (
@@ -19,11 +44,23 @@ function Login(): React.JSX.Element {
         resizeMode="contain"
       />
 
-      <Input label="Login:" placeholder="Digite seu login" secureTextEntry={false}/>
-      <Input label="Senha:" placeholder="Digite sua senha" secureTextEntry={true}/>
+      <Input
+        label="Login:"
+        placeholder="Digite seu login"
+        secureTextEntry={false}
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Input
+        label="Senha:"
+        placeholder="Digite sua senha"
+        secureTextEntry={true}
+        value={senha}
+        onChangeText={setSenha}
+      />
 
       <View style={styles.buttonContainer}>
-        <Button color="yellow" onPress={handleAvancarPress}>
+        <Button color="yellow" onPress={handleLogin}>
           Entrar
         </Button>
       </View>
