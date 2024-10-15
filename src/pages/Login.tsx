@@ -8,7 +8,7 @@ function Login(): React.JSX.Element {
   const navigation = useNavigation(); 
 
   const handleAvancarPress = () => {
-    navigation.navigate('Home'); 
+    navigation.navigate('Data'); 
   };
 
   return (
