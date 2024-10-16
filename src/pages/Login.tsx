@@ -65,8 +65,8 @@ function Login(): React.JSX.Element {
       />
 
       <Input
-        label="Login:"
-        placeholder="Digite seu login"
+        label="E-mail:"
+        placeholder="Digite seu e-mail"
         secureTextEntry={false}
         value={email}
         onChangeText={setEmail}

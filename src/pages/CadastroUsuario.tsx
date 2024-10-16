@@ -26,7 +26,7 @@ function CadastroUsuario(): React.JSX.Element {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({nome, senha, email, dataNascimento})
+                body: JSON.stringify({nome, senha, email, data_nascimento: dataNascimento})
             })
 
             console.log('Response Status:', response.status);
@@ -78,6 +78,7 @@ function CadastroUsuario(): React.JSX.Element {
         <DatePickerComponent
           label="Data de Nascimento:"
           onDateChange={setDataNascimento}
+          value={dataNascimento}
         />
 
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
