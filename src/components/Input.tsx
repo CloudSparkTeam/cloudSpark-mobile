@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Input = ({ label, placeholder, secureTextEntry }) => {
+const Input = ({ label, placeholder, secureTextEntry, value, onChangeText}) => {
   const [isPasswordVisible, setPasswordVisible] = useState(secureTextEntry);
 
   const togglePasswordVisibility = () => {
@@ -17,7 +17,9 @@ const Input = ({ label, placeholder, secureTextEntry }) => {
           style={styles.input}
           placeholder={placeholder}
           placeholderTextColor="#888888"
-          secureTextEntry={isPasswordVisible} 
+          secureTextEntry={isPasswordVisible}
+          value={value}
+          onChangeText={onChangeText}
         />
         {secureTextEntry && (
           <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
