@@ -5,6 +5,7 @@ import Login from './src/pages/Login';
 import Home from './src/pages/Home';
 import CadastroUsuario from './src/pages/CadastroUsuario';
 import Busca from './src/pages/Busca';
+import VisualizarEditarPerfil from './src/pages/VisualizarEditarPerfil';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,11 @@ function App(): React.JSX.Element {
         <Stack.Screen 
           name="Busca" 
           component={Busca}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen 
+          name="VisualizarEditarPerfil" 
+          component={VisualizarEditarPerfil}
           options={{ headerShown: true }}
         />
       </Stack.Navigator>

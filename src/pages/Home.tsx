@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Overlay from '../components/Overlay';
 import GoogleMaps from '../components/GoogleMaps';
+import { useNavigation } from '@react-navigation/native';
+import Button from '../components/Button';
 
 function Home(): React.JSX.Element {
   const [north, setNorth] = useState('');
@@ -15,6 +17,11 @@ function Home(): React.JSX.Element {
     setEast(leste.toString());
     setWest(oeste.toString());
   };
+  const navigation = useNavigation();
+
+  const verPerfil = async () => {
+    navigation.navigate('VisualizarEditarPerfil');
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,6 +30,9 @@ function Home(): React.JSX.Element {
       <Overlay style={styles.overlay} />
       <View style={styles.buttonContainer}>
         {/* Botões, se houver */}
+        <Button color="lightgray" onPress={verPerfil}>
+          Ver Perfil
+        </Button>
       </View>
     </SafeAreaView>
   );
