@@ -16,7 +16,7 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoogleMaps />
+      <GoogleMaps  />
       <View style={styles.overlay}>
         <Overlay />
       </View>
