@@ -47,7 +47,14 @@ function Login(): React.JSX.Element {
       console.error('Erro na conexão com o servidor:', error);
     }
   };
-  
+
+  const entrarComoConvidado = async () => {
+    navigation.navigate('Home');
+  }
+
+  const fazerCadastro = async () => {
+    navigation.navigate('CadastroUsuario');
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,8 +65,8 @@ function Login(): React.JSX.Element {
       />
 
       <Input
-        label="Login:"
-        placeholder="Digite seu login"
+        label="E-mail:"
+        placeholder="Digite seu e-mail"
         secureTextEntry={false}
         value={email}
         onChangeText={setEmail}
@@ -73,8 +80,16 @@ function Login(): React.JSX.Element {
       />
 
       <View style={styles.buttonContainer}>
-        <Button color="yellow" onPress={handleLogin}>
+        <Button color="yellow" style={styles.buttonEntrar} onPress={handleLogin}>
           Entrar
+        </Button>
+
+        <Button color="transparent" style={styles.buttonCriarConta} onPress={fazerCadastro}>
+          Criar uma conta
+        </Button>
+
+        <Button color="lightgray" style={styles.buttonConvidado} onPress={entrarComoConvidado}>
+          Entrar como convidade
         </Button>
       </View>
     </SafeAreaView>
@@ -94,9 +109,24 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     marginTop: 20,
+    width: '100%', // Para os botões ocuparem a largura total da tela
+  },
+  buttonEntrar: {
+    backgroundColor: 'yellow', // Botão "Entrar" com cor amarela
+    paddingVertical: 15,
+    marginBottom: 10, // Margem entre os botões
+  },
+  buttonCriarConta: {
+    backgroundColor: 'transparent', // Botão "Criar uma conta" transparente
+    borderWidth: 1, // Adiciona uma borda ao botão
+    borderColor: 'gray',
+    paddingVertical: 10, // Menor altura que o botão "Entrar"
+    marginBottom: 10,
+  },
+  buttonConvidado: {
+    backgroundColor: 'lightgray', // Botão "Entrar como convidado" com cor suave
+    paddingVertical: 15,
   },
 });
 
