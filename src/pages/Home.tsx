@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Overlay from '../components/Overlay';
 import GoogleMaps from '../components/GoogleMaps';
 
 function Home(): React.JSX.Element {
+  const [north, setNorth] = useState('');
+  const [south, setSouth] = useState('');
+  const [east, setEast] = useState('');
+  const [west, setWest] = useState('');
+
+  const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
+    setNorth(norte.toString());
+    setSouth(sul.toString());
+    setEast(leste.toString());
+    setWest(oeste.toString());
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <GoogleMaps />
+      {/* Passando a função handleCoordsChange para o componente GoogleMaps */}
+      <GoogleMaps onCoordsChange={handleCoordsChange} />
       <Overlay style={styles.overlay} />
       <View style={styles.buttonContainer}>
         {/* Botões, se houver */}

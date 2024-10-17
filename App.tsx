@@ -4,8 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './src/pages/Login';
 import Home from './src/pages/Home';
 import CadastroUsuario from './src/pages/CadastroUsuario';
-import DatePicker from './src/components/DatePicker';
-import FormPage from './src/pages/DataPage';
+import Busca from './src/pages/Busca';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,13 +23,13 @@ function App(): React.JSX.Element {
           options={{ headerShown: true }}
         />
         <Stack.Screen 
-          name="Data" 
-          component={FormPage}
+          name="CadastroUsuario" 
+          component={CadastroUsuario}
           options={{ headerShown: true }}
         />
         <Stack.Screen 
-          name="CadastroUsuario" 
-          component={CadastroUsuario}
+          name="Busca" 
+          component={Busca}
           options={{ headerShown: true }}
         />
       </Stack.Navigator>
