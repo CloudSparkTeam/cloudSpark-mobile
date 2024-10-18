@@ -6,6 +6,7 @@ import Home from './src/pages/Home';
 import CadastroUsuario from './src/pages/CadastroUsuario';
 import Busca from './src/pages/Busca';
 import VisualizarEditarPerfil from './src/pages/VisualizarEditarPerfil';
+import DetalhesImagem from './src/pages/DetalhesImagens';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,11 @@ function App(): React.JSX.Element {
         <Stack.Screen 
           name="VisualizarEditarPerfil" 
           component={VisualizarEditarPerfil}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen 
+          name="DetalhesImagem" 
+          component={DetalhesImagem}
           options={{ headerShown: true }}
         />
       </Stack.Navigator>

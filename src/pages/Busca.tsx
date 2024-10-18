@@ -5,6 +5,7 @@ import DatePicker from '../components/DatePicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Input from '../components/Input'; 
 import Button from '../components/Button';
+import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
 
 const { width } = Dimensions.get('window');
 
@@ -18,6 +19,7 @@ function Busca(): React.JSX.Element {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [clicado, setClicado] = useState(false);
+    const navigation = useNavigation(); // Obter o objeto de navegação
 
     const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
         if (norte && sul && leste && oeste) {
@@ -29,11 +31,21 @@ function Busca(): React.JSX.Element {
     };
 
     const handleSearch = async () => {
-
-        if (!north || !south || !east || !west || !startDate || !endDate || !cloudCoverage ) {
+        if (!north || !south || !east || !west || !startDate || !endDate || !cloudCoverage) {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
             return;
-          }
+        }
+
+        navigation.navigate('DetalhesImagem', {
+            dataImagem: new Date().toISOString(),
+            coordenadas: {
+                norte: north,
+                sul: south,
+                leste: east,
+                oeste: west,
+            },
+            coberturaNuvem: cloudCoverage,
+        });
 
         const response = await fetch('http://10.0.2.2:3002/imagemSatelite/criar', {
             method: 'POST',
@@ -45,21 +57,20 @@ function Busca(): React.JSX.Element {
                 coordenada_sul: parseFloat(south),
                 coordenada_leste: parseFloat(east),
                 coordenada_oeste: parseFloat(west),
-                data_imagem: new Date().toISOString(), 
+                data_imagem: new Date().toISOString(),
                 status: 'Ativo',
                 startDate: convertToISODate(startDate),
                 endDate: convertToISODate(endDate),
-                shadowPercentage: 0, 
+                shadowPercentage: 0,
                 cloudPercentage: parseFloat(cloudCoverage),
             }),
         });
 
         if (response.ok) {
             const data = await response.json();
-            console.log('Imagem de satélite criada:', data);
         } else {
             const errorData = await response.json();
-            console.error('Erro ao criar imagem de satélite:', errorData, startDate, endDate);
+            console.error('Erro ao criar imagem de satélite:', errorData);
         }
     };
 
@@ -67,7 +78,7 @@ function Busca(): React.JSX.Element {
         setClicado(!clicado);
     };
 
-    const convertToISODate = (dateString) => {
+    const convertToISODate = (dateString: string) => {
         const [day, month, year] = dateString.split('/');
         return new Date(`${year}-${month}-${day}T00:00:00Z`).toISOString();
     };
