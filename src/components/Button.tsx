@@ -22,14 +22,14 @@ const Button: React.FC<ButtonProps> = ({ color, onPress, children }) => {
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 15,
+    paddingVertical: 19,
     paddingHorizontal: 20,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 10,
     marginHorizontal: 5,
-    minWidth: 100,
+    minWidth: 150,
   },
   buttonText: {
     color: 'black',

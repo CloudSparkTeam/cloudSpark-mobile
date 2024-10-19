@@ -1,17 +1,19 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import React, { useState } from 'react';
 import BuscaComponent from './Busca';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 interface OverlayProps {
-  centralizarMapa: (cidade: string) => void; // Função para centralizar o mapa
+  // centralizarMapa: (latitude: number, longitude: number) => void; // Função para centralizar o mapa com dois parâmetros
 }
 
-const Overlay: React.FC<OverlayProps> = ({ centralizarMapa }) => {
+const Overlay: React.FC<OverlayProps> = ({ }) => {
   const [clicado, setClicado] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation(); // Navegação para outras telas
 
   const handlePress = () => {
     setClicado(!clicado);
@@ -22,12 +24,27 @@ const Overlay: React.FC<OverlayProps> = ({ centralizarMapa }) => {
   };
 
   const handleCitySelect = (latitude: number, longitude: number) => {
-    centralizarMapa(`${latitude},${longitude}`); // Chama a função para centralizar o mapa
-    handleCloseBusca();
+    // centralizarMapa(latitude, longitude); // Chama com os valores corretos
+    handleCloseBusca(); // Fecha o modal após a seleção
   };
-
   const handleOpenModal = () => {
     setModalVisible(true);
+  };
+
+  const handleSearchPress = () => {
+    Alert.alert(
+      "Muito bem!",
+      "Agora você pode selecionar seus 4 pontos de interesse.",
+      [
+        { 
+          text: "OK", 
+          onPress: () => {
+            console.log("Pontos selecionados");
+            navigation.navigate('Busca');
+          }
+        }
+      ]
+    )
   };
 
   return (
@@ -55,7 +72,7 @@ const Overlay: React.FC<OverlayProps> = ({ centralizarMapa }) => {
                 </View>
 
                 <View style={styles.container}>
-                  <TouchableOpacity onPress={handlePress} style={styles.botaoGenerico}>
+                  <TouchableOpacity onPress={handleSearchPress} style={styles.botaoGenerico}>
                     <Icon name="pencil" size={30} color="#000" />
                   </TouchableOpacity>
                   <Text style={styles.BotaoDesc}>Desenhar área de busca</Text>
@@ -63,14 +80,14 @@ const Overlay: React.FC<OverlayProps> = ({ centralizarMapa }) => {
               </View>
             </View>
 
-            <View style={styles.buttonContainer}>
+            {/* <View style={styles.buttonContainer}>
               <TouchableOpacity onPress={() => console.log('Voltar Pressionado')} style={styles.customButton}>
                 <Text style={styles.buttonText}>Voltar</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => console.log('Avançar Pressionado')} style={styles.customButton}>
                 <Text style={styles.buttonText}>Avançar</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
         </View>
       )}
@@ -84,7 +101,7 @@ const Overlay: React.FC<OverlayProps> = ({ centralizarMapa }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <BuscaComponent onClose={handleCloseBusca} onSearch={handleCitySelect} />
+            <BuscaComponent onClose={handleCloseBusca} />
           </View>
         </View>
       </Modal>

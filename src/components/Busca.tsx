@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';  // Importando o useNavigation
 
 interface BuscaComponentProps {
   onClose: () => void;
-  onSearch: (latitude: number, longitude: number) => void;
+  // onSearch: (coordenadas: { norte: number; sul: number; leste: number; oeste: number }) => void;
 }
 
-const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) => {
+const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose }) => {
   const [estado, setEstado] = useState('');
   const [cidade, setCidade] = useState('');
   const [estados, setEstados] = useState<any[]>([]);
@@ -14,6 +15,8 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
   const [estadoSelecionado, setEstadoSelecionado] = useState<any>(null);
   const [loadingEstados, setLoadingEstados] = useState(false);
   const [loadingCidades, setLoadingCidades] = useState(false);
+
+  const navigation = useNavigation();  // Hook para navegação
 
   // Fetch all states once when the component mounts
   useEffect(() => {
@@ -42,6 +45,7 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
             `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSelecionado.id}/municipios`
           );
           const cidadesData = await response.json();
+          console.log('Cidades carregadas:', cidadesData); // Verifique o conteúdo aqui
           setCidades(cidadesData);
         } catch (error) {
           console.error('Erro ao buscar cidades:', error);
@@ -66,35 +70,62 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
   // Function to handle search
   const handleSearch = async () => {
     if (estadoSelecionado && cidade) {
-      const selectedCity = cidades.find((c) => c.nome.toLowerCase() === cidade.toLowerCase());
-      if (selectedCity) {
-        // Fetch coordinates using OpenStreetMap Nominatim API
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
-              cidade
-            )}&state=${encodeURIComponent(estadoSelecionado.nome)}&country=Brazil&format=json`
-          );
-          const data = await response.json();
-          if (data && data.length > 0) {
-            const { lat, lon } = data[0];
-            onSearch(parseFloat(lat), parseFloat(lon)); // Chama a função original que passa as coordenadas para o mapa
-          } else {
-            alert('Coordenadas não encontradas para esta cidade.');
-          }
-        } catch (error) {
-          console.error('Erro ao buscar coordenadas:', error);
+      const selectedCity = cidades.find((c) =>
+        c.nome.toLowerCase() === cidade.toLowerCase()
+      );
+      console.log('Cidades carregadas:', cidades);
+      console.log('Estado Selecionado:', estadoSelecionado);
+      console.log('Cidade digitada:', cidade);
+  
+      // Encode the city and replace %20 with +
+      const cityEncoded = encodeURIComponent(cidade).replace(/%20/g, '+');
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?city=${cityEncoded}&format=json&polygon=1&addressdetails=1`
+        );
+        const data = await response.json();
+        console.log('Resposta da API:', data);
+        
+        if (data && data.length > 0) {
+          const { boundingbox } = data[0];
+          const [norte, sul, leste, oeste] = boundingbox.map((coord: string) => parseFloat(coord));
+  
+          console.log(`Estado: ${estadoSelecionado.nome}, Cidade: ${cidade}`);
+          console.log(`BoundingBox: Norte: ${norte}, Sul: ${sul}, Leste: ${leste}, Oeste: ${oeste}`);
+
+          // Navegue para a tela BuscaCidade e passe os valores do boundingbox como parâmetros
+          navigation.navigate('BuscaCidade', {
+            estado: estadoSelecionado.nome,
+            cidade: cidade,
+            boundingbox: {
+              norte: norte,
+              sul: sul,
+              leste: leste,
+              oeste: oeste,
+            },
+          });  
+        } else {
+          console.error('Coordenadas não encontradas para esta cidade.');
         }
-      } else {
-        alert('Cidade não encontrada.');
+      } catch (error) {
+        console.error('Erro ao buscar coordenadas:', error);
       }
+    } else if (estadoSelecionado) {
+      // Apenas busca pelo estado se a cidade não for preenchida
+      console.log(`Estado: ${estadoSelecionado.nome}`);
+      // Aqui você precisaria definir coordenadas padrão ou lógica para quando apenas o estado for selecionado.
+      // Atualmente, o Nominatim exige uma cidade para fornecer o bounding box, então você pode precisar de uma fonte alternativa para os limites dos estados.
     } else {
-      alert('Por favor, selecione um estado e uma cidade.');
+      console.error('Por favor, selecione um estado ou uma cidade.');
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.infoText}>
+        Você pode pesquisar somente estado ou estado e cidade. Caso não deseje, pode ir direto clicando em "Avançar".
+      </Text>
+
       <Text style={styles.label}>Estado:</Text>
       <TextInput
         placeholder="Digite o estado"
@@ -102,8 +133,8 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
         onChangeText={(text) => {
           setEstado(text);
           setEstadoSelecionado(null);
-          setCidade('');
-          setCidades([]);
+          setCidade(''); // Limpa a cidade ao alterar o estado
+          setCidades([]); // Limpa as cidades ao alterar o estado
         }}
         style={styles.input}
         autoCapitalize="words"
@@ -163,7 +194,7 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
       )}
 
       <TouchableOpacity onPress={handleSearch} style={styles.button}>
-        <Text style={styles.buttonText}>Buscar</Text>
+        <Text style={styles.buttonText}>Avançar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onClose} style={styles.buttonClose}>
         <Text style={styles.buttonCloseText}>Fechar</Text>
@@ -174,75 +205,56 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose, onSearch }) =>
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: '80%',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '90%',
-    alignSelf: 'center',
-    color: '#000',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginBottom: 5,
-    width: '100%',
-    borderRadius: 5,
-    color: '#000',
+    padding: 16,
   },
   label: {
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
-    alignSelf: 'flex-start',
+    marginVertical: 8,
   },
-  button: {
-    backgroundColor: '#FFD700',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  buttonClose: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#ff5c5c',
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonCloseText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  suggestionList: {
-    position: 'absolute',
-    top: 80,
-    zIndex: 1,
-    maxHeight: 150,
-    width: '100%',
-    backgroundColor: '#fff',
+  input: {
+    height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 8,
+  },
+  suggestionList: {
+    marginTop: 8,
   },
   suggestion: {
     padding: 10,
-    backgroundColor: '#f0f0f0',
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    color: '#000',
+    borderBottomColor: '#eee',
+  },
+  button: {
+    backgroundColor: '#0066cc',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  buttonClose: {
+    backgroundColor: '#ccc',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  buttonCloseText: {
+    color: '#333',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  infoText: {
+    marginBottom: 12,
+    color: '#666',
+    fontSize: 14,
   },
 });
 
 export default BuscaComponent;
-function alert(arg0: string) {
-  throw new Error('Function not implemented.');
-}
-
