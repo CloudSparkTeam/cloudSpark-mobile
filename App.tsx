@@ -8,6 +8,7 @@ import Login from './src/pages/Login';
 import CadastroUsuario from './src/pages/CadastroUsuario';
 import Busca from './src/pages/Busca';
 import VisualizarEditarPerfil from './src/pages/VisualizarEditarPerfil';
+import DetalhesImagem from './src/pages/DetalhesImagens';
 import BuscaCidade from './src/pages/BuscaCidade';
 
 // Definindo o tipo das rotas
@@ -54,6 +55,10 @@ function App(): React.JSX.Element {
           name="VisualizarEditarPerfil"
           component={VisualizarEditarPerfil}
           options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name="DetalhesImagem"
+          component={DetalhesImagem}
         />
         <Stack.Screen
           name="BuscaCidade"
