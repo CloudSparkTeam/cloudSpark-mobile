@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Image, Dimensions, Modal, TouchableOpacity, FlatList } from 'react-native';
 
 // Dimensões da tela
 const { width, height } = Dimensions.get('window');
 
-// Listar os nomes das imagens na pasta
-const imageFiles = [
-    require('../assets/CBERS4A_WPM_PCA_RGB321_20240930_202_142_thumbnail.png'),
-    require('../assets/CBERS4A_WPM_PCA_RGB321_20240930_202_142_thumbnail.png'), // Exemplo de outra imagem
-    // Adicione outras imagens conforme necessário
-];
-
-function DetalhesImagem({ route }): React.JSX.Element {
+function DetalhesImagem({ route }) {
     const { dataImagem, coordenadas, coberturaNuvem } = route.params;
 
-    // Estado para controlar a imagem em tela cheia
+    // Estado para armazenar as imagens
+    const [images, setImages] = useState([]);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    // Função para buscar as imagens da API
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const response = await fetch('http://10.0.2.2:3002/imagemSatelite/imagens-tratadas'); 
+                const data = await response.json();
+                setImages(data); 
+            } catch (error) {
+                console.error('Erro ao buscar as imagens:', error);
+            }
+        };
+
+        fetchImages();
+    }, []);
 
     // Função para abrir a imagem em tela cheia
     const openFullScreen = (index) => {
@@ -37,13 +46,6 @@ function DetalhesImagem({ route }): React.JSX.Element {
     });
     const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 });
 
-    // Função para definir o layout de cada item
-    const getItemLayout = (data, index) => ({
-        length: width, // Largura de cada item
-        offset: width * index, // Deslocamento do item
-        index, // Índice do item
-    });
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.card}>
@@ -51,17 +53,17 @@ function DetalhesImagem({ route }): React.JSX.Element {
 
                 {/* Carrossel Horizontal */}
                 <FlatList
-                    data={imageFiles}
+                    data={images} 
                     horizontal
                     pagingEnabled
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity key={index} onPress={() => openFullScreen(index)} style={styles.imageWrapper}>
-                            <Image source={item} style={styles.image} resizeMode="contain" />
+                            <Image source={{ uri: item.url }} style={styles.image} resizeMode="contain" />
                         </TouchableOpacity>
                     )}
                     keyExtractor={(_, index) => index.toString()}
-                    contentContainerStyle={styles.flatListContent} // Centraliza o conteúdo da FlatList
+                    contentContainerStyle={styles.flatListContent} 
                 />
 
                 <Text style={styles.text}>Data da Imagem: {dataImagem}</Text>
@@ -77,24 +79,20 @@ function DetalhesImagem({ route }): React.JSX.Element {
             <Modal visible={isFullScreen} transparent={true} animationType="fade">
                 <View style={styles.fullScreenContainer}>
                     <FlatList
-                        data={imageFiles}
+                        data={images} 
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         renderItem={({ item }) => (
                             <View style={styles.fullScreenImageWrapper}>
-                                <Image source={item} style={styles.fullScreenImage} resizeMode="contain" />
+                                <Image source={{ uri: item.url }} style={styles.fullScreenImage} resizeMode="contain" />
                             </View>
                         )}
                         keyExtractor={(_, index) => index.toString()}
                         initialScrollIndex={selectedIndex}
                         onViewableItemsChanged={onViewRef.current}
                         viewabilityConfig={viewConfigRef.current}
-                        getItemLayout={getItemLayout} // Adicione esta linha
-                        onScrollToIndexFailed={(info) => {
-                            console.warn(`Couldn't scroll to index ${info.index}`, info);
-                        }} // Adicione esta linha para lidar com falhas
-                        contentContainerStyle={styles.flatListContent} // Centraliza o conteúdo da FlatList no modal
+                        contentContainerStyle={styles.flatListContent} 
                     />
                     <TouchableOpacity style={styles.closeButton} onPress={closeFullScreen}>
                         <Text style={styles.closeButtonText}>X</Text>
@@ -134,16 +132,16 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     imageWrapper: {
-        width: width * 0.81, 
+        width: width * 0.81,
         justifyContent: 'center',
         alignItems: 'center',
     },
     flatListContent: {
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     image: {
-        width: width * 0.8, 
+        width: width * 0.8,
         height: height * 0.4,
         borderRadius: 10,
     },
@@ -154,7 +152,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     fullScreenImageWrapper: {
-        width: width, 
+        width: width,
         justifyContent: 'center',
         alignItems: 'center',
     },
