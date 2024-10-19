@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
 
 const { width } = Dimensions.get('window');
 
@@ -33,11 +34,24 @@ function BuscaCidade(): React.JSX.Element {
   const [maxScenes, setMaxScenes] = useState('');
   const [clicado, setClicado] = useState(false);
 
+  const navigation = useNavigation();
+
   const handleSearch = async () => {
     if (!north || !south || !east || !west || !startDate || !endDate || !cloudCoverage) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
+
+    navigation.navigate('DetalhesImagem', {
+      dataImagem: new Date().toISOString(),
+      coordenadas: {
+          norte: north,
+          sul: south,
+          leste: east,
+          oeste: west,
+      },
+      coberturaNuvem: cloudCoverage,
+    });
 
     const response = await fetch('http://10.0.2.2:3002/imagemSatelite/criar', {
         method: 'POST',
