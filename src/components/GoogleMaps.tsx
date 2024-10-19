@@ -7,6 +7,7 @@ const { width, height } = Dimensions.get('screen');
 
 interface GoogleMapsProps {
   onCoordsChange: (norte: number, sul: number, leste: number, oeste: number) => void;
+  isHomePage?: boolean;  // Prop para verificar se está na página Home
 }
 
 interface GoogleMapsInterface {
@@ -16,7 +17,7 @@ interface GoogleMapsInterface {
   longitudeDelta: number;
 }
 
-function GoogleMaps({ onCoordsChange }: GoogleMapsProps): React.JSX.Element {
+function GoogleMaps({ onCoordsChange, isHomePage = false }: GoogleMapsProps): React.JSX.Element {
   const [regiao, setRegiao] = useState<GoogleMapsInterface | null>(null);
   const [polygonCoords, setPolygonCoords] = useState<{ latitude: number; longitude: number }[]>([]);
 
@@ -151,10 +152,12 @@ function GoogleMaps({ onCoordsChange }: GoogleMapsProps): React.JSX.Element {
         </View>
       )}
 
-      {/* Botão para limpar os pontos */}
-      <View style={styles.buttonContainer}>
-        <Button title="Limpar Pontos" onPress={limparPontos} />
-      </View>
+      {/* Condicionalmente exibe o botão "Limpar Pontos" se não for a Home */}
+      {!isHomePage && (
+        <View style={styles.buttonContainer}>
+          <Button title="Limpar Pontos" onPress={limparPontos} />
+        </View>
+      )}
     </View>
   );
 }

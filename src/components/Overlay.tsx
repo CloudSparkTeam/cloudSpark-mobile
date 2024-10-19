@@ -1,20 +1,50 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import React, { useState } from 'react';
+import BuscaComponent from './Busca';
 import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-const Overlay: React.FC = () => {
+interface OverlayProps {
+  // centralizarMapa: (latitude: number, longitude: number) => void; // Função para centralizar o mapa com dois parâmetros
+}
+
+const Overlay: React.FC<OverlayProps> = ({ }) => {
   const [clicado, setClicado] = useState(false);
-  const navigation = useNavigation(); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation(); // Navegação para outras telas
 
   const handlePress = () => {
     setClicado(!clicado);
   };
 
+  const handleCloseBusca = () => {
+    setModalVisible(false);
+  };
+
+  const handleCitySelect = (latitude: number, longitude: number) => {
+    // centralizarMapa(latitude, longitude); // Chama com os valores corretos
+    handleCloseBusca(); // Fecha o modal após a seleção
+  };
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
   const handleSearchPress = () => {
-    navigation.navigate('Busca');
+    Alert.alert(
+      "Muito bem!",
+      "Agora você pode selecionar seus 4 pontos de interesse.",
+      [
+        { 
+          text: "OK", 
+          onPress: () => {
+            console.log("Pontos selecionados");
+            navigation.navigate('Busca');
+          }
+        }
+      ]
+    )
   };
 
   return (
@@ -34,23 +64,47 @@ const Overlay: React.FC = () => {
             <View style={styles.grid}>
               <View style={styles.gridRow}>
                 <View style={styles.container}>
-                  <TouchableOpacity onPress={handleSearchPress} style={styles.botaoGenerico}>
-                    <Icon name="search" size={30} color="#0006" />
+                  {/* Ícone de Lupa que abre o modal */}
+                  <TouchableOpacity onPress={handleOpenModal} style={styles.botaoGenerico}>
+                    <Icon name="search" size={30} color="#000" />
                   </TouchableOpacity>
                   <Text style={styles.BotaoDesc}>Realizar busca</Text>
                 </View>
 
                 <View style={styles.container}>
-                  <TouchableOpacity onPress={handlePress} style={styles.botaoGenerico}>
-                    <Icon name="pencil" size={30} color="#0006" />
+                  <TouchableOpacity onPress={handleSearchPress} style={styles.botaoGenerico}>
+                    <Icon name="pencil" size={30} color="#000" />
                   </TouchableOpacity>
                   <Text style={styles.BotaoDesc}>Desenhar área de busca</Text>
                 </View>
               </View>
             </View>
+
+            {/* <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => console.log('Voltar Pressionado')} style={styles.customButton}>
+                <Text style={styles.buttonText}>Voltar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => console.log('Avançar Pressionado')} style={styles.customButton}>
+                <Text style={styles.buttonText}>Avançar</Text>
+              </TouchableOpacity>
+            </View> */}
           </View>
         </View>
       )}
+
+      {/* Modal de busca */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={handleCloseBusca}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <BuscaComponent onClose={handleCloseBusca} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -58,12 +112,19 @@ const Overlay: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#fff', 
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    borderRadius: 30,
   },
   alignBottom: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   botao: {
     width: width * 0.15,
@@ -75,6 +136,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#0004',
     paddingBottom: 5,
+    marginTop: 10,
   },
   overlay: {
     marginTop: height * 0.007,
@@ -87,10 +149,10 @@ const styles = StyleSheet.create({
     borderColor: '#0004',
   },
   grid: {
-    padding: 10,
+    padding: 20,
     width: width * 0.9,
     flexDirection: 'column',
-    gap: height * 0.05,
+    gap: height * 0.03,
   },
   gridRow: {
     flexDirection: 'row',
@@ -104,14 +166,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#0004',
+    borderColor: '#0007',
     paddingBottom: 5,
+    marginLeft: 25,
   },
   BotaoDesc: {
     marginTop: 5,
-    maxWidth: width * 0.2,
+    maxWidth: width * 2,
     textAlign: 'center',
     flexWrap: 'wrap',
+  },
+  customButton: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  botaoFechar: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#ff5c5c',
+    borderRadius: 5,
+  },
+  textoBotao: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
