@@ -19,7 +19,7 @@ function VisualizarEditarPerfil(): React.JSX.Element {
             try {
                 const token = await AsyncStorage.getItem('userToken');
                 if (!token) {
-                    Alert.alert('Erro', 'Usuário não autenticado.');
+                    Alert.alert('Erro', 'Usuário não autenticado. Volte ao Login e faça seu cadastro!');
                     navigation.navigate('Login');
                     return;
                 }
@@ -54,6 +54,16 @@ function VisualizarEditarPerfil(): React.JSX.Element {
 
         fetchData();
     }, []);
+
+    const handleLogout = async () => {
+        try {
+          await AsyncStorage.removeItem('userToken'); // Remove o token do AsyncStorage
+          navigation.navigate('Login');
+          console.log('Usuário deslogado com sucesso');
+        } catch (error) {
+          console.error('Erro ao fazer logout:', error);
+        }
+      };
 
     const handleAtualizar = async () => {
         if (!nome || !email) {
@@ -135,6 +145,10 @@ function VisualizarEditarPerfil(): React.JSX.Element {
 
                 <Button color="yellow" onPress={handleAtualizar}>
                     Atualizar
+                </Button>
+
+                <Button color="red" onPress={handleLogout}>
+                    Logout
                 </Button>
             </View>
 
