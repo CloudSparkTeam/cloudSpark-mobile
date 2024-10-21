@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Platform, PermissionsAndroid, Dimensions, Text } from 'react-native';
+import { StyleSheet, View, Platform, PermissionsAndroid, Dimensions, Text, Button } from 'react-native';
 import MapView, { Polygon, Marker } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
 const { width, height } = Dimensions.get('screen');
+
+interface GoogleMapsProps {
+  onCoordsChange: (norte: number, sul: number, leste: number, oeste: number) => void;
+  isHomePage?: boolean;  // Prop para verificar se está na página Home
+}
 
 interface GoogleMapsInterface {
   latitude: number;
@@ -12,7 +17,7 @@ interface GoogleMapsInterface {
   longitudeDelta: number;
 }
 
-function GoogleMaps(): React.JSX.Element {
+function GoogleMaps({ onCoordsChange, isHomePage = false }: GoogleMapsProps): React.JSX.Element {
   const [regiao, setRegiao] = useState<GoogleMapsInterface | null>(null);
   const [polygonCoords, setPolygonCoords] = useState<{ latitude: number; longitude: number }[]>([]);
 
@@ -32,18 +37,23 @@ function GoogleMaps(): React.JSX.Element {
   }, [polygonCoords]);
 
   function getMinhaLocalizacao() {
-    Geolocation.getCurrentPosition(info => {
-      setRegiao({
-        latitude: info.coords.latitude,
-        longitude: info.coords.longitude,
-        latitudeDelta: 50.0,
-        longitudeDelta: 50.0
-      });
-    }, 
-    () => { console.log("Erro ao obter localização"); }, {
-      enableHighAccuracy: true,
-      timeout: 2000,
-    });
+    Geolocation.getCurrentPosition(
+      (info) => {
+        setRegiao({
+          latitude: info.coords.latitude,
+          longitude: info.coords.longitude,
+          latitudeDelta: 50.0,
+          longitudeDelta: 50.0,
+        });
+      },
+      () => {
+        console.log('Erro ao obter localização');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 2000,
+      }
+    );
   }
 
   // Função para selecionar coordenadas manualmente no mapa
@@ -51,7 +61,7 @@ function GoogleMaps(): React.JSX.Element {
     const { coordinate } = e.nativeEvent;
 
     if (polygonCoords.length < 4) {
-      setPolygonCoords(prevCoords => [...prevCoords, coordinate]);
+      setPolygonCoords((prevCoords) => [...prevCoords, coordinate]);
 
       if (polygonCoords.length === 3) {
         console.log('Coordenadas selecionadas:', [...polygonCoords, coordinate]);
@@ -63,8 +73,8 @@ function GoogleMaps(): React.JSX.Element {
 
   // Função para calcular Norte, Sul, Leste e Oeste
   const calcularExtremos = (coords: { latitude: number; longitude: number }[]) => {
-    const latitudes = coords.map(coord => coord.latitude);
-    const longitudes = coords.map(coord => coord.longitude);
+    const latitudes = coords.map((coord) => coord.latitude);
+    const longitudes = coords.map((coord) => coord.longitude);
 
     const norte = Math.max(...latitudes);
     const sul = Math.min(...latitudes);
@@ -76,7 +86,20 @@ function GoogleMaps(): React.JSX.Element {
     setLeste(leste);
     setOeste(oeste);
 
+    // Chame a função de callback para enviar os valores para o componente pai
+    onCoordsChange(norte, sul, leste, oeste);
+
     console.log(`Norte: ${norte}, Sul: ${sul}, Leste: ${leste}, Oeste: ${oeste}`);
+  };
+
+  // Função para limpar os pontos e redefinir os extremos
+  const limparPontos = () => {
+    setPolygonCoords([]);
+    setNorte(null);
+    setSul(null);
+    setLeste(null);
+    setOeste(null);
+    console.log('Pontos limpos');
   };
 
   const handleMarkerDragEnd = (e: any, index: number) => {
@@ -95,10 +118,8 @@ function GoogleMaps(): React.JSX.Element {
       <MapView
         onMapReady={() => {
           if (Platform.OS === 'android') {
-            PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-            ).then(() => {
-              console.log("Permissão concedida");
+            PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(() => {
+              console.log('Permissão concedida');
             });
           }
         }}
@@ -112,22 +133,12 @@ function GoogleMaps(): React.JSX.Element {
       >
         {/* Desenha o polígono com base nas coordenadas manuais selecionadas */}
         {polygonCoords.length > 2 && (
-          <Polygon
-            coordinates={polygonCoords}
-            strokeColor="#0000FF"
-            strokeWidth={2}
-            fillColor="rgba(0,0,255,0.3)"
-          />
+          <Polygon coordinates={polygonCoords} strokeColor="#0000FF" strokeWidth={2} fillColor="rgba(0,0,255,0.3)" />
         )}
 
         {/* Adiciona os marcadores nos pontos manuais */}
         {polygonCoords.map((coord, index) => (
-          <Marker
-            key={index}
-            coordinate={coord}
-            draggable
-            onDragEnd={(e) => handleMarkerDragEnd(e, index)}
-          />
+          <Marker key={index} coordinate={coord} draggable onDragEnd={(e) => handleMarkerDragEnd(e, index)} />
         ))}
       </MapView>
 
@@ -140,6 +151,13 @@ function GoogleMaps(): React.JSX.Element {
           <Text>Oeste: {oeste.toFixed(6)}</Text>
         </View>
       )}
+
+      {/* Condicionalmente exibe o botão "Limpar Pontos" se não for a Home */}
+      {!isHomePage && (
+        <View style={styles.buttonContainer}>
+          <Button title="Limpar Pontos" onPress={limparPontos} />
+        </View>
+      )}
     </View>
   );
 }
@@ -147,15 +165,23 @@ function GoogleMaps(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   coordContainer: {
     position: 'absolute',
     bottom: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     padding: 10,
-    borderRadius: 10
-  }
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 10,
+    borderRadius: 10,
+  },
 });
 
 export default GoogleMaps;
