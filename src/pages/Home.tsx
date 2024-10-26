@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
-import Overlay from '../components/Overlay';
+import Overlay from '../components/Overlay/Overlay';
 import GoogleMaps from '../components/GoogleMaps';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import Button from '../components/Button';
 
 interface HomeProps {
   navigation?: NavigationProp<any>;
@@ -45,11 +44,6 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
       <View style={styles.overlay}>
         <Overlay />
       </View>
-      {/* <View style={styles.buttonContainer}>
-        <Button color="lightgray" onPress={verPerfil}>
-          Ver Perfil
-        </Button>
-      </View> */}
       <TouchableOpacity style={styles.iconContainer} onPress={verPerfil}>
         <Icon name="person-circle" size={40} color="black" />
       </TouchableOpacity>
