@@ -81,7 +81,12 @@ const BuscaComponent: React.FC<BuscaComponentProps> = ({ onClose }) => {
       const cityEncoded = encodeURIComponent(cidade).replace(/%20/g, '+');
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?city=${cityEncoded}&format=json&polygon=1&addressdetails=1`
+          `https://nominatim.openstreetmap.org/search?city=${cityEncoded}&format=json&polygon=1&addressdetails=1`,
+          {
+            headers: {
+              'User-Agent': 'cloudSparkMobile/0.0.1',
+            },
+          }
         );
         const data = await response.json();
         console.log('Resposta da API:', data);
