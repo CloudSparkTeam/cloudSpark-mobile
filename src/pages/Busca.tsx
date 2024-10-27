@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import GoogleMaps from '../components/GoogleMaps';
+import GoogleMaps from '../components/GoogleMaps/GoogleMaps';
 import DatePicker from '../components/DatePicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Input from '../components/Input'; 
