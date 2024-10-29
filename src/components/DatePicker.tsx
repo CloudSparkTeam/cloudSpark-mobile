@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 
-const DatePickerComponent = ({ label, onDateChange }) => {
+interface DatePickerComponentProps {
+  label: string;
+  onDateChange: (date: string) => void;
+}
+
+const DatePickerComponent: React.FC<DatePickerComponentProps> = ({ label, onDateChange }) => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 

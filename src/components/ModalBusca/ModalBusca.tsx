@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Modal } from 'react-native';
-import BuscaComponent from '../Busca';
+import BuscaComponent from '../Busca/Busca';
 import { styles } from '../Overlay/Overlay.styles';
 
 interface ModalBuscaProps {
