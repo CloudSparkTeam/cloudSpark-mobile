@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import Overlay from '../components/Overlay/Overlay';
-import GoogleMaps from '../components/GoogleMaps';
+import GoogleMaps from '../components/GoogleMaps/GoogleMaps';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
