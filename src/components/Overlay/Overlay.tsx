@@ -8,8 +8,6 @@ import DrawAreaButton from '../DrawAreaButton/DrawAreaButton';
 import ModalBusca from '../ModalBusca/ModalBusca';
 import { styles } from './Overlay.styles';
 
-const { width, height } = Dimensions.get('window');
-
 const Overlay: React.FC = () => {
   const [clicado, setClicado] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);

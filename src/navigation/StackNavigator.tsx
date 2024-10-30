@@ -6,7 +6,7 @@ import Login from '../pages/Login';
 import CadastroUsuario from '../pages/CadastroUsuario';
 import Busca from '../pages/Busca';
 import VisualizarEditarPerfil from '../pages/VisualizarEditarPerfil';
-import DetalhesImagem from '../pages/DetalhesImagens';
+import DetalhesImagem from '../pages/DetalhesImagens/DetalhesImagens';
 import BuscaCidade from '../pages/BuscaCidade';
 
 export type RootStackParamList = {
