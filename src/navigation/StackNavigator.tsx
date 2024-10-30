@@ -17,7 +17,16 @@ export type RootStackParamList = {
   Busca: undefined;
   VisualizarEditarPerfil: undefined;
   DetalhesImagem: undefined;
-  BuscaCidade: undefined;
+  BuscaCidade: {
+    estado: string;
+    cidade: string;
+    boundingbox: {
+      norte: number;
+      sul: number;
+      leste: number;
+      oeste: number;
+    };
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -33,7 +42,7 @@ const StackNavigator: React.FC = () => {
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Profile"
