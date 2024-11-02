@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Platform, PermissionsAndroid, Dimensions } from 'react-native';
-import MapView, { Region } from 'react-native-maps'; // Importando o tipo Region
+import MapView, { Region, MapPressEvent } from 'react-native-maps';
 import useGeolocation from '../../hooks/useGeolocation';
 import styles from './GoogleMaps.styles';
 
 const { width, height } = Dimensions.get('screen');
 
-const GoogleMaps: React.FC = () => {
+interface GoogleMapsProps {
+  onPress?: (e: MapPressEvent) => void;  // Aceita o evento onPress como prop
+  children?: React.ReactNode; // Para aceitar os componentes filhos como PolygonMap
+}
+
+const GoogleMaps: React.FC<GoogleMapsProps> = ({ onPress, children }) => {
   const location = useGeolocation();
-  const [regiao, setRegiao] = useState<Region | null>(null); // Usando o tipo Region para o estado
+  const [regiao, setRegiao] = useState<Region | null>(null);
 
   useEffect(() => {
     if (location) {
@@ -21,7 +26,7 @@ const GoogleMaps: React.FC = () => {
     }
   }, [location]);
 
-  const handleRegionChangeComplete = (region: Region) => { // Definindo o tipo do parâmetro como Region
+  const handleRegionChangeComplete = (region: Region) => {
     setRegiao(region);
   };
 
@@ -43,11 +48,14 @@ const GoogleMaps: React.FC = () => {
           longitudeDelta: 50.0,
         }}
         onRegionChangeComplete={handleRegionChangeComplete}
+        onPress={onPress}  // Passa o onPress para MapView
         zoomEnabled={true}
         minZoomLevel={1}
         showsUserLocation={true}
         loadingEnabled={true}
-      />
+      >
+        {children} 
+      </MapView>
     </View>
   );
 };

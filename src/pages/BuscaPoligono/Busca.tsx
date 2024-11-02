@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import GoogleMaps from '../components/GoogleMaps/GoogleMaps';
-import DatePicker from '../components/DatePicker';
+import { SafeAreaView, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import GoogleMaps from '../../components/GoogleMaps/GoogleMaps';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Input from '../components/Input'; 
-import Button from '../components/Button';
-import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
-import PolygonMap from '../components/PolygonMap/PolygonMap';
-import CoordDisplay from '../components/CoordDisplay/CoordDisplay';
-import ClearButton from '../components/ClearButton/ClearButton';
-
-const { width } = Dimensions.get('window');
+import Button from '../../components/Button';
+import { useNavigation } from '@react-navigation/native';
+import PolygonMap from '../../components/PolygonMap/PolygonMap';
+import CoordDisplay from '../../components/CoordDisplay/CoordDisplay';
+import ClearButton from '../../components/ClearButton/ClearButton';
+import { styles } from './BuscaPoligono.styles';
+import FormInputs from '../../components/FormularioBusca/FormularioBusca';
 
 function Busca(): React.JSX.Element {
     const [polygonCoords, setPolygonCoords] = useState<{ latitude: number; longitude: number }[]>([]);
@@ -23,7 +21,7 @@ function Busca(): React.JSX.Element {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [clicado, setClicado] = useState(false);
-    const navigation = useNavigation(); // Obter o objeto de navegação
+    const navigation = useNavigation();
 
     const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
         if (norte && sul && leste && oeste) {
@@ -95,23 +93,29 @@ function Busca(): React.JSX.Element {
         }
     };
 
+    const handleMarkerDragEnd = (e: any, index: number) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        const updatedCoords = [...polygonCoords];
+        updatedCoords[index] = { latitude, longitude };
+        setPolygonCoords(updatedCoords);
+        
+        // Recalcular os extremos quando os pontos são movidos
+        if (updatedCoords.length === 4) {
+            calcularExtremos(updatedCoords);
+        }
+    };
+
     const handleMapPress = (e: any) => {
+        console.log("Map pressed", e.nativeEvent.coordinate);
         const { coordinate } = e.nativeEvent;
-    
-        // Limita a seleção a exatamente 4 pontos
         if (polygonCoords.length < 4) {
             const newCoords = [...polygonCoords, coordinate];
             setPolygonCoords(newCoords);
-            
-            // Quando atingir 4 pontos, calcula os extremos
             if (newCoords.length === 4) {
                 calcularExtremos(newCoords);
             }
-        } else {
-            console.log('Você já selecionou 4 pontos.');
         }
     };
-    
 
     const calcularExtremos = (coords: { latitude: number; longitude: number }[]) => {
         const latitudes = coords.map((coord) => coord.latitude);
@@ -122,7 +126,6 @@ function Busca(): React.JSX.Element {
         setEast(Math.max(...longitudes).toString());
         setWest(Math.min(...longitudes).toString());
     };
-    
 
     const limparPontos = () => {
         setPolygonCoords([]);
@@ -131,16 +134,15 @@ function Busca(): React.JSX.Element {
         setEast('');
         setWest('');
     };
-    
 
     return (
         <SafeAreaView style={styles.container}>
-            <GoogleMaps />
-            <PolygonMap coordinates={polygonCoords} onMarkerDragEnd={() => {}} />
+            <GoogleMaps onPress={handleMapPress}>
+                <PolygonMap coordinates={polygonCoords} onMarkerDragEnd={handleMarkerDragEnd} />
+            </GoogleMaps>
 
             {polygonCoords.length === 4 && (
                 <>
-                    <PolygonMap coordinates={polygonCoords} onMarkerDragEnd={() => {}} />
                     <CoordDisplay norte={Number(north)} sul={Number(south)} leste={Number(east)} oeste={Number(west)} />
                     <ClearButton onPress={limparPontos} />
                 </>
@@ -160,106 +162,31 @@ function Busca(): React.JSX.Element {
                         </TouchableOpacity>
 
                         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                            <Input
-                                label="Norte"
-                                placeholder="Norte..."
-                                value={north}
-                                onChangeText={() => {}} 
-                                editable={false} 
-                            />
-                            <Input
-                                label="Sul"
-                                placeholder="Sul..."
-                                value={south}
-                                onChangeText={() => {}} 
-                                editable={false} 
-                            />
-                            <Input
-                                label="Leste"
-                                placeholder="Leste..."
-                                value={east}
-                                onChangeText={() => {}} 
-                                editable={false} 
-                            />
-                            <Input
-                                label="Oeste"
-                                placeholder="Oeste..."
-                                value={west}
-                                onChangeText={() => {}} 
-                                editable={false} 
-                            />
-                            <DatePicker
-                                label="Data Inicial:"
-                                onDateChange={setStartDate}
-                                value={startDate}
-                            />
-                            <DatePicker
-                                label="Data Final:"
-                                onDateChange={setEndDate}
-                                value={endDate}
-                            />
-                            <Input
-                                label="Cobertura de nuvem (máx)"
-                                placeholder="Cobertura de nuvem"
-                                value={cloudCoverage}
-                                onChangeText={handleCloudCoverageChange}
-                                keyboardType="numeric"
-                            />
-                            <Input
-                                label="Número de cenas por dataset (máx)"
-                                placeholder="Número de cenas por dataset"
-                                value={maxScenes}
-                                onChangeText={setMaxScenes}
-                                keyboardType="numeric"
-                            />
+                        <FormInputs
+                            north={north}
+                            south={south}
+                            east={east}
+                            west={west}
+                            cloudCoverage={cloudCoverage}
+                            setCloudCoverage={setCloudCoverage}
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
+                            maxScenes={maxScenes}
+                            setMaxScenes={setMaxScenes}
+                            handleSearch={handleSearch}
+                        />
                             <Button color="yellow" onPress={handleSearch}>
                                 Filtrar
                             </Button>
                         </ScrollView>
                     </View>
                 )}
-            </View>
+            </View>   
+                
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    formContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-        borderRadius: 30,
-        padding: 10,
-        borderColor: '#0004',
-        borderWidth: 2,
-        width: width * 0.9,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    scrollViewContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 20,
-    },
-    alignBottom: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-    },
-    botao: {
-        width: width * 0.15,
-        height: width * 0.15,
-        backgroundColor: '#fff',
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#0004',
-        paddingBottom: 5,
-    },
-});
 
 export default Busca;
