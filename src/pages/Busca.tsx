@@ -6,10 +6,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Input from '../components/Input'; 
 import Button from '../components/Button';
 import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
+import PolygonMap from '../components/PolygonMap/PolygonMap';
+import CoordDisplay from '../components/CoordDisplay/CoordDisplay';
+import ClearButton from '../components/ClearButton/ClearButton';
 
 const { width } = Dimensions.get('window');
 
 function Busca(): React.JSX.Element {
+    const [polygonCoords, setPolygonCoords] = useState<{ latitude: number; longitude: number }[]>([]);
     const [north, setNorth] = useState('');
     const [south, setSouth] = useState('');
     const [east, setEast] = useState('');
@@ -91,9 +95,56 @@ function Busca(): React.JSX.Element {
         }
     };
 
+    const handleMapPress = (e: any) => {
+        const { coordinate } = e.nativeEvent;
+    
+        // Limita a seleção a exatamente 4 pontos
+        if (polygonCoords.length < 4) {
+            const newCoords = [...polygonCoords, coordinate];
+            setPolygonCoords(newCoords);
+            
+            // Quando atingir 4 pontos, calcula os extremos
+            if (newCoords.length === 4) {
+                calcularExtremos(newCoords);
+            }
+        } else {
+            console.log('Você já selecionou 4 pontos.');
+        }
+    };
+    
+
+    const calcularExtremos = (coords: { latitude: number; longitude: number }[]) => {
+        const latitudes = coords.map((coord) => coord.latitude);
+        const longitudes = coords.map((coord) => coord.longitude);
+    
+        setNorth(Math.max(...latitudes).toString());
+        setSouth(Math.min(...latitudes).toString());
+        setEast(Math.max(...longitudes).toString());
+        setWest(Math.min(...longitudes).toString());
+    };
+    
+
+    const limparPontos = () => {
+        setPolygonCoords([]);
+        setNorth('');
+        setSouth('');
+        setEast('');
+        setWest('');
+    };
+    
+
     return (
         <SafeAreaView style={styles.container}>
-            <GoogleMaps onCoordsChange={handleCoordsChange} />
+            <GoogleMaps />
+            <PolygonMap coordinates={polygonCoords} onMarkerDragEnd={() => {}} />
+
+            {polygonCoords.length === 4 && (
+                <>
+                    <PolygonMap coordinates={polygonCoords} onMarkerDragEnd={() => {}} />
+                    <CoordDisplay norte={Number(north)} sul={Number(south)} leste={Number(east)} oeste={Number(west)} />
+                    <ClearButton onPress={limparPontos} />
+                </>
+            )}
 
             <View style={styles.alignBottom}>
                 {!clicado && (

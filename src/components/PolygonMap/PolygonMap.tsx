@@ -17,4 +17,5 @@ const PolygonMap: React.FC<PolygonMapProps> = ({ coordinates, onMarkerDragEnd })
   </>
 );
 
+
 export default PolygonMap;
