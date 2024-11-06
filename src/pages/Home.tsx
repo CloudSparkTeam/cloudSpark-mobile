@@ -16,7 +16,6 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
   const [east, setEast] = useState('');
   const [west, setWest] = useState('');
 
-  // Função que atualiza as coordenadas
   const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
     setNorth(norte.toString());
     setSouth(sul.toString());
@@ -24,7 +23,7 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
     setWest(oeste.toString());
   };
 
-  const internalNavigation = useNavigation(); // Para navegação sem prop
+  const internalNavigation = useNavigation();
   const handleIconPress = () => {
     if (navigation) {
       navigation.navigate('Profile');
@@ -39,9 +38,8 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Passando a função handleCoordsChange e isHomePage={true} para o componente GoogleMaps */}
-      <GoogleMaps onCoordsChange={handleCoordsChange} isHomePage={true} />
-      <View style={styles.overlay}>
+      <GoogleMaps />
+      <View style={styles.overlayContainer}>
         <Overlay />
       </View>
       <TouchableOpacity style={styles.iconContainer} onPress={verPerfil}>
@@ -56,12 +54,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'lightblue',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  overlay: {
-    marginBottom: 10,
+  overlayContainer: {
+    position: 'absolute',
+    bottom: 10,
     left: 0,
     right: 0,
+    alignItems: 'center', // Centraliza o Overlay no contêiner
     zIndex: 2,
   },
   buttonContainer: {

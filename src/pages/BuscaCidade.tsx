@@ -7,6 +7,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
+import FormInputs from '../components/FormularioBusca/FormularioBusca';
 
 const { width } = Dimensions.get('window');
 
@@ -85,7 +86,7 @@ function BuscaCidade(): React.JSX.Element {
     setClicado(!clicado);
     };
 
-    const convertToISODate = (dateString) => {
+    const convertToISODate = (dateString: string) => {
         const [day, month, year] = dateString.split('/');
         return new Date(`${year}-${month}-${day}T00:00:00Z`).toISOString();
     };
@@ -116,53 +117,20 @@ function BuscaCidade(): React.JSX.Element {
             </TouchableOpacity>
 
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-              <Input
-                label="Norte"
-                placeholder="Norte..."
-                value={north}
-                onChangeText={setNorth}
-              />
-              <Input
-                label="Sul"
-                placeholder="Sul..."
-                value={south}
-                onChangeText={setSouth}
-              />
-              <Input
-                label="Leste"
-                placeholder="Leste..."
-                value={east}
-                onChangeText={setEast}
-              />
-              <Input
-                label="Oeste"
-                placeholder="Oeste..."
-                value={west}
-                onChangeText={setWest}
-              />
-              <DatePicker
-                label="Data Inicial:"
-                onDateChange={setStartDate}
-                value={startDate}
-              />
-              <DatePicker
-                label="Data Final:"
-                onDateChange={setEndDate}
-                value={endDate}
-              />
-              <Input
-                label="Cobertura de nuvem (máx)"
-                placeholder="Cobertura de nuvem"
-                value={cloudCoverage}
-                onChangeText={setCloudCoverage}
-                keyboardType="numeric"
-              />
-              <Input
-                label="Número de cenas por dataset (máx)"
-                placeholder="Número de cenas por dataset"
-                value={maxScenes}
-                onChangeText={setMaxScenes}
-                keyboardType="numeric"
+            <FormInputs
+                  north={north}
+                  south={south}
+                  east={east}
+                  west={west}
+                  cloudCoverage={cloudCoverage}
+                  setCloudCoverage={setCloudCoverage}
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                  maxScenes={maxScenes}
+                  setMaxScenes={setMaxScenes}
+                  handleSearch={handleSearch}
               />
               <Button color="yellow" onPress={handleSearch}>
                 Filtrar

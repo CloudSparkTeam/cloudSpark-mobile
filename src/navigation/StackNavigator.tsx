@@ -4,7 +4,7 @@ import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import Login from '../pages/Login';
 import CadastroUsuario from '../pages/CadastroUsuario';
-import Busca from '../pages/Busca';
+import Busca from '../pages/BuscaPoligono/Busca';
 import VisualizarEditarPerfil from '../pages/VisualizarEditarPerfil';
 import DetalhesImagem from '../pages/DetalhesImagens/DetalhesImagens';
 import BuscaCidade from '../pages/BuscaCidade';
