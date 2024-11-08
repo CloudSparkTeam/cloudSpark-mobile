@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Input, Button } from 'react-native-elements'; // Certifique-se de que os componentes de UI sejam compatíveis
-import DatePicker from 'react-native-datepicker'; // Ajuste conforme necessário
+// import DatePicker from 'react-native-date-picker'; // Ajuste conforme necessário
+import DatePicker from '../../components/DatePicker';
 
 interface FormInputsProps {
     north: string;
@@ -67,23 +68,11 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 secureTextEntry={false}
             />
             <DatePicker
-                style={{ width: '100%' }}
-                date={startDate}
-                mode="date"
-                placeholder="Data Inicial"
-                format="YYYY-MM-DD"
-                minDate="2020-05-01"
-                maxDate="2030-12-31"
+                label="Data Inicial:"
                 onDateChange={setStartDate}
             />
             <DatePicker
-                style={{ width: '100%' }}
-                date={endDate}
-                mode="date"
-                placeholder="Data Final"
-                format="YYYY-MM-DD"
-                minDate="2020-05-01"
-                maxDate="2030-12-31"
+                label="Data Final:"
                 onDateChange={setEndDate}
             />
             <Input
