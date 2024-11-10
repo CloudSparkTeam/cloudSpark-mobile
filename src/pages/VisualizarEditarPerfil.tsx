@@ -28,6 +28,8 @@ function VisualizarEditarPerfil(): React.JSX.Element {
                 const decodedToken: any = jwtDecode(token);
                 const userId = decodedToken.id; // ou o campo que contém o id
 
+                console.log("ID do usuário:", userId);
+
                 const response = await fetch(`http://10.0.2.2:3002/usuario/listar/${userId}`, {
                     method: 'GET',
                     headers: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import GoogleMaps from '../../components/GoogleMaps/GoogleMaps';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -9,6 +9,8 @@ import CoordDisplay from '../../components/CoordDisplay/CoordDisplay';
 import ClearButton from '../../components/ClearButton/ClearButton';
 import { styles } from './BuscaPoligono.styles';
 import FormInputs from '../../components/FormularioBusca/FormularioBusca';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 function Busca(): React.JSX.Element {
     const [polygonCoords, setPolygonCoords] = useState<{ latitude: number; longitude: number }[]>([]);
@@ -21,7 +23,25 @@ function Busca(): React.JSX.Element {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [clicado, setClicado] = useState(false);
+    const [userId, setUserId] = useState<number | null>(null);
     const navigation = useNavigation();
+
+    useEffect(() => {
+        // Obter o ID do usuário do token ao montar o componente
+        const fetchUserId = async () => {
+          try {
+            const token = await AsyncStorage.getItem('userToken');
+    
+            const decodedToken: any = jwtDecode(token);
+            setUserId(decodedToken.id); // Define o ID do usuário no estado
+          } catch (error) {
+            const token = 0
+            setUserId(token)
+          }
+        };
+    
+        fetchUserId();
+      }, []);
 
     const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
         if (norte && sul && leste && oeste) {
@@ -65,6 +85,7 @@ function Busca(): React.JSX.Element {
                 endDate: convertToISODate(endDate),
                 shadowPercentage: 0,
                 cloudPercentage: parseFloat(cloudCoverage),
+                usuario_id: userId,
             }),
         });
 
