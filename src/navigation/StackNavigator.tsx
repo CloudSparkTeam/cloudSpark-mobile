@@ -8,6 +8,7 @@ import Busca from '../pages/BuscaPoligono/Busca';
 import VisualizarEditarPerfil from '../pages/VisualizarEditarPerfil';
 import DetalhesImagem from '../pages/DetalhesImagens/DetalhesImagens';
 import BuscaCidade from '../pages/BuscaCidade';
+import Historico from '../pages/Historico/Historico';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -27,6 +28,7 @@ export type RootStackParamList = {
       oeste: number;
     };
   };
+  Historico: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -70,6 +72,11 @@ const StackNavigator: React.FC = () => {
       <Stack.Screen
         name="BuscaCidade"
         component={BuscaCidade}
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="Historico"
+        component={Historico}
         options={{ headerShown: true }}
       />
     </Stack.Navigator>
