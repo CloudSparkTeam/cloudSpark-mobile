@@ -36,6 +36,12 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
     internalNavigation.navigate('VisualizarEditarPerfil');
   };
 
+  const handleNavigateToHistorico = () => {
+    if (navigation) {
+      navigation.navigate('Historico');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <GoogleMaps />
@@ -44,6 +50,11 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
       </View>
       <TouchableOpacity style={styles.iconContainer} onPress={verPerfil}>
         <Icon name="person-circle" size={40} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleNavigateToHistorico}
+        style={styles.botaoHistorico}>
+        <Icon name="time-outline" size={30} color="#000" />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -71,6 +82,14 @@ const styles = StyleSheet.create({
     top: 20,
     left: 20,
     zIndex: 3,
+  },
+  botaoHistorico: {
+    position: 'absolute',
+    top: 65,
+    right: 13,
+    backgroundColor: '#ffffff',
+    padding: 3,
+    elevation: 5,
   },
 });
 

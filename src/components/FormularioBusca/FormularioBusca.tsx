@@ -89,7 +89,6 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 onChangeText={setMaxScenes}
                 keyboardType="numeric"
             />
-            <Button title="Filtrar" onPress={handleSearch} />
         </ScrollView>
     );
 };

@@ -5,4 +5,9 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
+    downloadButtonContainer: {
+        padding: 10,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
 });
