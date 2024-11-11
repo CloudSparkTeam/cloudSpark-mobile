@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, View, ScrollView, TouchableOpacity, Alert, Text, Dimensions } from 'react-native';
-import GoogleMaps from '../components/GoogleMaps';
+import GoogleMaps from '../components/GoogleMaps/GoogleMaps';
 import DatePicker from '../components/DatePicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native'; // Importar o hook de navegação
+import FormInputs from '../components/FormularioBusca/FormularioBusca';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 const { width } = Dimensions.get('window');
 
@@ -33,8 +36,26 @@ function BuscaCidade(): React.JSX.Element {
   const [cloudCoverage, setCloudCoverage] = useState('');
   const [maxScenes, setMaxScenes] = useState('');
   const [clicado, setClicado] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    // Obter o ID do usuário do token ao montar o componente
+    const fetchUserId = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+
+        const decodedToken: any = jwtDecode(token);
+        setUserId(decodedToken.id); // Define o ID do usuário no estado
+      } catch (error) {
+        const token = 0
+        setUserId(token)
+      }
+    };
+
+    fetchUserId();
+  }, []);
 
   const handleSearch = async () => {
     if (!north || !south || !east || !west || !startDate || !endDate || !cloudCoverage) {
@@ -69,6 +90,7 @@ function BuscaCidade(): React.JSX.Element {
             endDate: convertToISODate(endDate),
             shadowPercentage: 0, 
             cloudPercentage: parseFloat(cloudCoverage),
+            usuario_id: userId,
         }),
     });
 
@@ -85,7 +107,7 @@ function BuscaCidade(): React.JSX.Element {
     setClicado(!clicado);
     };
 
-    const convertToISODate = (dateString) => {
+    const convertToISODate = (dateString: string) => {
         const [day, month, year] = dateString.split('/');
         return new Date(`${year}-${month}-${day}T00:00:00Z`).toISOString();
     };
@@ -116,53 +138,20 @@ function BuscaCidade(): React.JSX.Element {
             </TouchableOpacity>
 
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-              <Input
-                label="Norte"
-                placeholder="Norte..."
-                value={north}
-                onChangeText={setNorth}
-              />
-              <Input
-                label="Sul"
-                placeholder="Sul..."
-                value={south}
-                onChangeText={setSouth}
-              />
-              <Input
-                label="Leste"
-                placeholder="Leste..."
-                value={east}
-                onChangeText={setEast}
-              />
-              <Input
-                label="Oeste"
-                placeholder="Oeste..."
-                value={west}
-                onChangeText={setWest}
-              />
-              <DatePicker
-                label="Data Inicial:"
-                onDateChange={setStartDate}
-                value={startDate}
-              />
-              <DatePicker
-                label="Data Final:"
-                onDateChange={setEndDate}
-                value={endDate}
-              />
-              <Input
-                label="Cobertura de nuvem (máx)"
-                placeholder="Cobertura de nuvem"
-                value={cloudCoverage}
-                onChangeText={setCloudCoverage}
-                keyboardType="numeric"
-              />
-              <Input
-                label="Número de cenas por dataset (máx)"
-                placeholder="Número de cenas por dataset"
-                value={maxScenes}
-                onChangeText={setMaxScenes}
-                keyboardType="numeric"
+            <FormInputs
+                  north={north}
+                  south={south}
+                  east={east}
+                  west={west}
+                  cloudCoverage={cloudCoverage}
+                  setCloudCoverage={setCloudCoverage}
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                  maxScenes={maxScenes}
+                  setMaxScenes={setMaxScenes}
+                  handleSearch={handleSearch}
               />
               <Button color="yellow" onPress={handleSearch}>
                 Filtrar

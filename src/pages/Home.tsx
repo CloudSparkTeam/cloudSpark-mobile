@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
-import Overlay from '../components/Overlay';
-import GoogleMaps from '../components/GoogleMaps';
+import Overlay from '../components/Overlay/Overlay';
+import GoogleMaps from '../components/GoogleMaps/GoogleMaps';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import Button from '../components/Button';
 
 interface HomeProps {
   navigation?: NavigationProp<any>;
@@ -17,7 +16,6 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
   const [east, setEast] = useState('');
   const [west, setWest] = useState('');
 
-  // Função que atualiza as coordenadas
   const handleCoordsChange = (norte: number, sul: number, leste: number, oeste: number) => {
     setNorth(norte.toString());
     setSouth(sul.toString());
@@ -25,7 +23,7 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
     setWest(oeste.toString());
   };
 
-  const internalNavigation = useNavigation(); // Para navegação sem prop
+  const internalNavigation = useNavigation();
   const handleIconPress = () => {
     if (navigation) {
       navigation.navigate('Profile');
@@ -38,20 +36,25 @@ function Home({ navigation }: HomeProps): React.JSX.Element {
     internalNavigation.navigate('VisualizarEditarPerfil');
   };
 
+  const handleNavigateToHistorico = () => {
+    if (navigation) {
+      navigation.navigate('Historico');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Passando a função handleCoordsChange e isHomePage={true} para o componente GoogleMaps */}
-      <GoogleMaps onCoordsChange={handleCoordsChange} isHomePage={true} />
-      <View style={styles.overlay}>
+      <GoogleMaps />
+      <View style={styles.overlayContainer}>
         <Overlay />
       </View>
-      {/* <View style={styles.buttonContainer}>
-        <Button color="lightgray" onPress={verPerfil}>
-          Ver Perfil
-        </Button>
-      </View> */}
       <TouchableOpacity style={styles.iconContainer} onPress={verPerfil}>
         <Icon name="person-circle" size={40} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleNavigateToHistorico}
+        style={styles.botaoHistorico}>
+        <Icon name="time-outline" size={30} color="#000" />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -62,12 +65,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'lightblue',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  overlay: {
-    marginBottom: 10,
+  overlayContainer: {
+    position: 'absolute',
+    bottom: 10,
     left: 0,
     right: 0,
+    alignItems: 'center', // Centraliza o Overlay no contêiner
     zIndex: 2,
   },
   buttonContainer: {
@@ -78,6 +82,14 @@ const styles = StyleSheet.create({
     top: 20,
     left: 20,
     zIndex: 3,
+  },
+  botaoHistorico: {
+    position: 'absolute',
+    top: 65,
+    right: 13,
+    backgroundColor: '#ffffff',
+    padding: 3,
+    elevation: 5,
   },
 });
 
