@@ -74,7 +74,7 @@ function BuscaCidade(): React.JSX.Element {
       coberturaNuvem: cloudCoverage,
     });
 
-    const response = await fetch('http://10.0.2.2:3002/imagemSatelite/criar', {
+    const response = await fetch('http://192.168.137.66:3002/imagemSatelite/criar', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

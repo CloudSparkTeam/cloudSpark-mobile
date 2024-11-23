@@ -69,7 +69,7 @@ function Busca(): React.JSX.Element {
             coberturaNuvem: cloudCoverage,
         });
 
-        const response = await fetch('http://10.0.2.2:3002/imagemSatelite/criar', {
+        const response = await fetch('http://192.168.137.66:3002/imagemSatelite/criar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,7 +164,14 @@ function Busca(): React.JSX.Element {
 
             {polygonCoords.length === 4 && (
                 <>
-                    <CoordDisplay norte={Number(north)} sul={Number(south)} leste={Number(east)} oeste={Number(west)} />
+                    <View  style={{ marginLeft: 10 }} >
+                        <CoordDisplay 
+                            norte={Number(north)} 
+                            sul={Number(south)} 
+                            leste={Number(east)} 
+                            oeste={Number(west)} 
+                        />
+                    </View>
                     <ClearButton onPress={limparPontos} />
                 </>
             )}

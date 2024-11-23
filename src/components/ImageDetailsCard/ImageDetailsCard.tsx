@@ -5,7 +5,7 @@ import { styles } from './ImageDetailsCard.styles'
 export const ImageDetailsCard = ({ dataImagem, coordenadas, coberturaNuvem }) => {
     return (
         <View style={styles.card}>
-            <Text style={styles.title}>Detalhes da Imagem</Text>
+            {/* <Text style={styles.title}>Detalhes da Imagem</Text> */}
             <Text style={styles.text}>Data da Imagem: {dataImagem}</Text>
             <Text style={styles.text}>Coordenadas:</Text>
             <Text style={styles.text}>Norte: {coordenadas.norte}</Text>

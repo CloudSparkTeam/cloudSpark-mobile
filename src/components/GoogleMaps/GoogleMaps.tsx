@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Platform, PermissionsAndroid, Dimensions } from 'react-native';
+import { View, Platform, PermissionsAndroid, Dimensions, ActivityIndicator } from 'react-native';
 import MapView, { Region, MapPressEvent } from 'react-native-maps';
 import useGeolocation from '../../hooks/useGeolocation';
 import styles from './GoogleMaps.styles';
@@ -7,7 +7,7 @@ import styles from './GoogleMaps.styles';
 const { width, height } = Dimensions.get('screen');
 
 interface GoogleMapsProps {
-  onPress?: (e: MapPressEvent) => void;  // Aceita o evento onPress como prop
+  onPress?: (e: MapPressEvent) => void; // Aceita o evento onPress como prop
   children?: React.ReactNode; // Para aceitar os componentes filhos como PolygonMap
 }
 
@@ -20,8 +20,8 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ onPress, children }) => {
       setRegiao({
         latitude: location.latitude,
         longitude: location.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
+        latitudeDelta: 1.2, 
+        longitudeDelta: 1.2,
       });
     }
   }, [location]);
@@ -29,6 +29,14 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ onPress, children }) => {
   const handleRegionChangeComplete = (region: Region) => {
     setRegiao(region);
   };
+
+  if (!regiao) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -41,20 +49,15 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({ onPress, children }) => {
           }
         }}
         style={{ width, height }}
-        initialRegion={regiao || {
-          latitude: 0,
-          longitude: 0,
-          latitudeDelta: 50.0,
-          longitudeDelta: 50.0,
-        }}
+        initialRegion={regiao}
         onRegionChangeComplete={handleRegionChangeComplete}
-        onPress={onPress}  // Passa o onPress para MapView
+        onPress={onPress} // Passa o onPress para MapView
         zoomEnabled={true}
         minZoomLevel={1}
         showsUserLocation={true}
         loadingEnabled={true}
       >
-        {children} 
+        {children}
       </MapView>
     </View>
   );

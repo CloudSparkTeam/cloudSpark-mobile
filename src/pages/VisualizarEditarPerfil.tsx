@@ -30,7 +30,7 @@ function VisualizarEditarPerfil(): React.JSX.Element {
 
                 console.log("ID do usuário:", userId);
 
-                const response = await fetch(`http://10.0.2.2:3002/usuario/listar/${userId}`, {
+                const response = await fetch(`http://192.168.137.66:3002/usuario/listar/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function VisualizarEditarPerfil(): React.JSX.Element {
                 updatedData.senha = senha;
             }
 
-            const response = await fetch(`http://10.0.2.2:3002/usuario/atualizar/${userId}`, {
+            const response = await fetch(`http://192.168.137.66:3002/usuario/atualizar/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ function VisualizarEditarPerfil(): React.JSX.Element {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.card}>
-                <Text style={styles.title}>Meu Perfil</Text>
+                {/* <Text style={styles.title}>Meu Perfil</Text> */}
 
                 <Input
                     label="Nome"
