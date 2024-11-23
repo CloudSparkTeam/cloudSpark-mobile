@@ -1,86 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView, Button, View, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { SafeAreaView, View, Alert, Button, PermissionsAndroid } from 'react-native';
+import RNFS from 'react-native-fs'; // Importar a biblioteca
 import { ImageCarousel } from '../../components/ImageCarousel/ImageCarousel';
 import { ImageDetailsCard } from '../../components/ImageDetailsCard/ImageDetailsCard';
 import { FullScreenModal } from '../../components/FullScreenModal/FullScreenModal';
-import { fetchTreatedImages } from '../../services/apiService';
 import { styles } from './DetalhesImagens.styles';
-import { jwtDecode } from 'jwt-decode';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from 'react-native-fs';  // Importa a biblioteca para manipulação de arquivos
-import { PermissionsAndroid } from 'react-native';
-
 
 function DetalhesImagem({ route }) {
-    const { dataImagem, coordenadas, coberturaNuvem } = route.params;
-    const [images, setImages] = useState([]);
-    const [isFullScreen, setIsFullScreen] = useState(false);
+    const { dataImagem, coordenadas, coberturaNuvem, periodo, imagens } = route.params;
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-    const [userId, setUserId] = useState<number | null>(null);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
-    useEffect(() => {
-        const checkUserLoggedIn = async () => {
-            try {
-                const token = await AsyncStorage.getItem('userToken');
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    const userId = decodedToken.id;
-                    setUserId(userId);
-
-                    const response = await fetch(`http://10.0.2.2:3002/usuario/listar/${userId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-
-                    if (response.ok) {
-                        setIsUserLoggedIn(true);
-                        const data = await response.json();
-                        console.log("Dados do backend:", data);
-                    }
+    const requestPermissions = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                {
+                    title: 'Permissão de Armazenamento',
+                    message: 'Este aplicativo precisa de acesso ao armazenamento.',
+                    buttonPositive: 'OK', // Botão para conceder a permissão
                 }
-            } catch (error) {
-                console.error('Erro ao buscar dados do perfil:', error);
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('Permissão de armazenamento concedida');
+            } else {
+                console.log('Permissão de armazenamento negada');
             }
-        };
-
-        checkUserLoggedIn();
+        } catch (err) {
+            console.warn(err);
+        }
+    };
+    
+    useEffect(() => {
+        requestPermissions();
     }, []);
 
-    useEffect(() => {
-        if (userId !== null) {
-            const loadImages = async () => {
-                try {
-                    const data = await fetchTreatedImages(userId);
-                    console.log('Imagens carregadas:', data);
-                    setImages(data);
-                } catch (error) {
-                    console.error('Erro ao carregar as imagens:', error);
-                    Alert.alert(`Erro: ${error}`);
-                }
-            };
-            loadImages();
-        }
-    }, [userId]);  // Dependência no userId
-
-    const openFullScreen = (index) => {
-        setSelectedIndex(index);
-        setIsFullScreen(true);
-    };
-
-    const closeFullScreen = () => setIsFullScreen(false);
-
-    const onViewRef = useRef(({ viewableItems }) => {
-        if (viewableItems.length > 0) setSelectedIndex(viewableItems[0].index);
-    });
-    const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
-
     const handleDownloadImage = async () => {
-        if (images[selectedIndex] && images[selectedIndex].url) {
-            const imageUrl = images[selectedIndex].url;
+        if (imagens[selectedIndex] && imagens[selectedIndex].url) {
+            const imageUrl = imagens[selectedIndex].url;
             const filename = imageUrl.split('/').pop();
             const path = `${RNFS.ExternalDirectoryPath}/Download/${filename}`; // Caminho para a pasta de download
     
@@ -120,44 +77,33 @@ function DetalhesImagem({ route }) {
         }
     };
 
-    const requestPermissions = async () => {
-    try {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-                title: 'Permissão de Armazenamento',
-                message: 'Este aplicativo precisa de acesso ao armazenamento.',
-                buttonPositive: 'OK', // Botão para conceder a permissão
-            }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Permissão de armazenamento concedida');
-        } else {
-            console.log('Permissão de armazenamento negada');
-        }
-    } catch (err) {
-        console.warn(err);
-    }
-};
+    const openFullScreen = (index) => {
+        setSelectedIndex(index);
+        setIsFullScreen(true);
+    };
 
-useEffect(() => {
-    requestPermissions();
-}, []);
-    
-    
+    const closeFullScreen = () => setIsFullScreen(false);
+
+    const onViewRef = useRef(({ viewableItems }) => {
+        if (viewableItems.length > 0) setSelectedIndex(viewableItems[0].index);
+    });
+    const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
     return (
         <SafeAreaView style={styles.container}>
-            <ImageCarousel images={images} onImagePress={openFullScreen} />
-            <ImageDetailsCard dataImagem={dataImagem} coordenadas={coordenadas} coberturaNuvem={coberturaNuvem} />
-            {isUserLoggedIn && (
-                <View style={styles.downloadButtonContainer}>
-                    <Button title="Baixar Imagem" onPress={handleDownloadImage} />
-                </View>
-            )}
+            <ImageCarousel images={imagens} onImagePress={openFullScreen} />
+            <ImageDetailsCard
+                dataImagem={dataImagem}
+                coordenadas={coordenadas}
+                coberturaNuvem={coberturaNuvem}
+                periodo={periodo}
+            />
+            <View style={styles.downloadButtonContainer}>
+                <Button title="Baixar Imagem" onPress={handleDownloadImage} />
+            </View>
             <FullScreenModal
                 visible={isFullScreen}
-                images={images}
+                images={imagens}
                 selectedIndex={selectedIndex}
                 onClose={closeFullScreen}
                 onViewRef={onViewRef}
