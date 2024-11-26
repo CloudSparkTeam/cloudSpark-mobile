@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SafeAreaView, View, Alert, Button, PermissionsAndroid } from 'react-native';
-import RNFS from 'react-native-fs'; // Importar a biblioteca
+import RNFS from 'react-native-fs'; // Biblioteca para gerenciar arquivos
 import { ImageCarousel } from '../../components/ImageCarousel/ImageCarousel';
 import { ImageDetailsCard } from '../../components/ImageDetailsCard/ImageDetailsCard';
 import { FullScreenModal } from '../../components/FullScreenModal/FullScreenModal';
@@ -11,6 +11,7 @@ function DetalhesImagem({ route }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isFullScreen, setIsFullScreen] = useState(false);
 
+    // Solicitar permissão para acessar o armazenamento
     const requestPermissions = async () => {
         try {
             const granted = await PermissionsAndroid.request(
@@ -18,53 +19,45 @@ function DetalhesImagem({ route }) {
                 {
                     title: 'Permissão de Armazenamento',
                     message: 'Este aplicativo precisa de acesso ao armazenamento.',
-                    buttonPositive: 'OK', // Botão para conceder a permissão
+                    buttonPositive: 'OK',
                 }
             );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('Permissão de armazenamento concedida');
-            } else {
-                console.log('Permissão de armazenamento negada');
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                Alert.alert('Permissão necessária', 'Permissão para acessar o armazenamento foi negada.');
             }
         } catch (err) {
             console.warn(err);
         }
     };
-    
+
+    // Solicitar permissão ao carregar o componente
     useEffect(() => {
         requestPermissions();
     }, []);
 
-    const handleDownloadImage = async () => {
-        if (imagens[selectedIndex] && imagens[selectedIndex].url) {
-            const imageUrl = imagens[selectedIndex].url;
+    // Função para realizar o download da imagem
+    const handleDownloadImage = async (index) => {
+        if (imagens[index] && imagens[index].url) {
+            const imageUrl = imagens[index].url;
             const filename = imageUrl.split('/').pop();
-            const path = `${RNFS.ExternalDirectoryPath}/Download/${filename}`; // Caminho para a pasta de download
-    
-            console.log('Caminho da imagem:', path); // Verifique o caminho
-    
+            const path = `${RNFS.ExternalDirectoryPath}/Download/${filename}`;
+
             try {
-                // Verifique se a pasta "Download" existe, se não, crie-a
+                // Verificar ou criar diretório de download
                 const downloadDir = `${RNFS.ExternalDirectoryPath}/Download`;
                 const dirExists = await RNFS.exists(downloadDir);
                 if (!dirExists) {
-                    await RNFS.mkdir(downloadDir);  // Cria a pasta "Download" se não existir
-                    console.log('Pasta Download criada.');
+                    await RNFS.mkdir(downloadDir);
                 }
-    
+
                 // Baixar a imagem
                 const download = await RNFS.downloadFile({
                     fromUrl: imageUrl,
                     toFile: path,
                 }).promise;
-    
+
                 if (download.statusCode === 200) {
                     Alert.alert('Imagem baixada', `A imagem foi salva em: ${path}`);
-    
-                    // Verificar se o arquivo foi realmente salvo
-                    const fileExists = await RNFS.exists(path);
-                    console.log('Arquivo existe?', fileExists);  // Deve ser 'true'
-    
                 } else {
                     Alert.alert('Erro ao baixar', 'Não foi possível baixar a imagem.');
                 }
@@ -77,13 +70,16 @@ function DetalhesImagem({ route }) {
         }
     };
 
+    // Abrir imagem em tela cheia
     const openFullScreen = (index) => {
         setSelectedIndex(index);
         setIsFullScreen(true);
     };
 
+    // Fechar imagem em tela cheia
     const closeFullScreen = () => setIsFullScreen(false);
 
+    // Configurações do carrossel
     const onViewRef = useRef(({ viewableItems }) => {
         if (viewableItems.length > 0) setSelectedIndex(viewableItems[0].index);
     });
@@ -91,16 +87,27 @@ function DetalhesImagem({ route }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ImageCarousel images={imagens} onImagePress={openFullScreen} />
+            {/* Carrossel de Imagens com botão de download integrado */}
+            <ImageCarousel
+                images={imagens}
+                onImagePress={openFullScreen}
+                onDownloadPress={(index) => handleDownloadImage(index)} // Função de download
+            />
+
+            {/* Detalhes da Imagem */}
             <ImageDetailsCard
                 dataImagem={dataImagem}
                 coordenadas={coordenadas}
                 coberturaNuvem={coberturaNuvem}
                 periodo={periodo}
             />
-            <View style={styles.downloadButtonContainer}>
-                <Button title="Baixar Imagem" onPress={handleDownloadImage} />
-            </View>
+
+            {/* Botão de Download Geral (opcional) */}
+            {/* <View style={styles.downloadButtonContainer}>
+                <Button title="Baixar Imagem Atual" onPress={() => handleDownloadImage(selectedIndex)} />
+            </View> */}
+
+            {/* Modal de Tela Cheia */}
             <FullScreenModal
                 visible={isFullScreen}
                 images={imagens}
