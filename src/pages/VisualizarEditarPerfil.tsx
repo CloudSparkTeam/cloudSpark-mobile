@@ -116,7 +116,7 @@ function VisualizarEditarPerfil(): React.JSX.Element {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.card}>
-                <Text style={styles.title}>Meu Perfil</Text>
+                {/* <Text style={styles.title}>Meu Perfil</Text> */}
 
                 <Input
                     label="Nome"
