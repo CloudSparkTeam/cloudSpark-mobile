@@ -53,31 +53,32 @@ const StackNavigator: React.FC = () => {
       <Stack.Screen
         name="CadastroUsuario"
         component={CadastroUsuario}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Cadastre sua conta' }}
       />
       <Stack.Screen
         name="Busca"
         component={Busca}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Desenhar pontos' }}
       />
       <Stack.Screen
         name="VisualizarEditarPerfil"
         component={VisualizarEditarPerfil}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Perfil' }}
       />
       <Stack.Screen
         name="DetalhesImagem"
         component={DetalhesImagem}
+        options={{ headerShown: true, title: 'Detalhes da Imagem' }}
       />
       <Stack.Screen
         name="BuscaCidade"
         component={BuscaCidade}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Buscar cidades'  }}
       />
       <Stack.Screen
         name="Historico"
         component={Historico}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Histórico'  }}
       />
     </Stack.Navigator>
   );

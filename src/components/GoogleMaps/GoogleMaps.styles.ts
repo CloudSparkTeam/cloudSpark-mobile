@@ -16,12 +16,19 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    top: 10,
+    left: 10,
+   // backgroundColor: 'rgba(255, 255, 255, 0.8)',
     padding: 10,
     borderRadius: 10,
+    color: '#000',
   },
+  customButton: {
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },  
 });
 
 export default styles;

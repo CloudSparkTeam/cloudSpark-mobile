@@ -51,7 +51,7 @@ function CadastroUsuario(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Cadastre a sua conta</Text>
+        {/* <Text style={styles.title}>Cadastre a sua conta</Text> */}
 
         <Input
           label="Digite seu nome"
