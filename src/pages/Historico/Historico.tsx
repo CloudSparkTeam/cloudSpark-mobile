@@ -59,7 +59,7 @@ const Historico: React.FC = () => {
     const fetchConsultas = async () => {
         setLoading(true);
         try {
-            const response = await axios.get<Consulta[]>(`http://192.168.137.66:3002/imagemSatelite/listarUsuario/${userId}`);
+            const response = await axios.get<Consulta[]>(`http://10.0.2.2:3002/imagemSatelite/listarUsuario/${userId}`);
             setConsultas(response.data);
         } catch (error) {
             console.error('Erro ao carregar dados:', error);
@@ -77,7 +77,7 @@ const Historico: React.FC = () => {
         console.log(`Gerar novamente consulta com ID: ${item.id}`);
         setLoadingGerarNovamente(true);
         try {
-            const response = await fetch(`http://192.168.137.66:3002/imagemSatelite/gerarNovamente/${item.id}`, {
+            const response = await fetch(`http://10.0.2.2:3002/imagemSatelite/gerarNovamente/${item.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -28,7 +28,7 @@ function DetalhesImagem({ route }) {
                     const userId = decodedToken.id;
                     setUserId(userId);
 
-                    const response = await fetch(`http://192.168.137.66:3002/usuario/listar/${userId}`, {
+                    const response = await fetch(`http://10.0.2.2:3002/usuario/listar/${userId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',

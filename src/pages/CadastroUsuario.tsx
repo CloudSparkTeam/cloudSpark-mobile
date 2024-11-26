@@ -21,7 +21,7 @@ function CadastroUsuario(): React.JSX.Element {
           try {
             console.log('Enviando estes dados:', {nome, email, dataNascimento, senha});
             
-            const response = await fetch('http://192.168.137.66:3002/usuario/criar', {
+            const response = await fetch('http://10.0.2.2:3002/usuario/criar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

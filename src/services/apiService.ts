@@ -1,6 +1,6 @@
 export const fetchTreatedImages = async (userId: number) => {
   try {
-    const response = await fetch(`http://192.168.137.66:3002/imagemSatelite/imagens-tratadas/${userId}`);
+    const response = await fetch(`http://10.0.2.2:3002/imagemSatelite/imagens-tratadas/${userId}`);
     if (!response.ok) throw new Error('Erro ao buscar as imagens');
 
     const data = await response.json();

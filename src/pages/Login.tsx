@@ -19,7 +19,7 @@ function Login(): React.JSX.Element {
     try {
       console.log('Dados enviados para o backend:', { email, senha });
 
-      const response = await fetch('http://192.168.137.66:3002/login', {
+      const response = await fetch('http://10.0.2.2:3002/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
