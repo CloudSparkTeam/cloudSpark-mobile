@@ -9,6 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';  // Importa a biblioteca para manipulação de arquivos
 import { PermissionsAndroid } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Importa o Picker
 
 
 function DetalhesImagem({ route }) {
@@ -18,6 +19,7 @@ function DetalhesImagem({ route }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
     const [userId, setUserId] = useState<number | null>(null);
+    const [selectedOption, setSelectedOption] = useState('original'); // Estado para a opção selecionada
 
     useEffect(() => {
         const checkUserLoggedIn = async () => {
@@ -144,11 +146,25 @@ useEffect(() => {
     requestPermissions();
 }, []);
     
-    
+    const handleOptionChange = (itemValue) => {
+        setSelectedOption(itemValue);
+        // Lógica para alterar a imagem com base na opção selecionada
+        // Por exemplo, você pode alterar a URL da imagem ou aplicar filtros
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <ImageCarousel images={images} onImagePress={openFullScreen} />
+            <Picker
+                selectedValue={selectedOption}
+                onValueChange={handleOptionChange}
+                style={styles.picker} // Adicione estilos conforme necessário
+            >
+                <Picker.Item label="Original" value="original" />
+                <Picker.Item label="Máscara de Sombras" value="shadow_mask" />
+                <Picker.Item label="Máscara de Nuvem" value="cloud_mask" />
+                <Picker.Item label="Ambos" value="both_masks" />
+            </Picker>
             <ImageDetailsCard dataImagem={dataImagem} coordenadas={coordenadas} coberturaNuvem={coberturaNuvem} />
             {isUserLoggedIn && (
                 <View style={styles.downloadButtonContainer}>
