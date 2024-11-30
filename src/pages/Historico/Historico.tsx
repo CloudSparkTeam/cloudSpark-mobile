@@ -96,10 +96,14 @@ const Historico: React.FC = () => {
                     usuario_id: userId,
                 }),
             });
-    
+
             if (response.ok) {
-                Alert.alert("Sucesso", "Imagem gerada novamente com sucesso!");
-                console.log("Indo para a página detalhes da imagem")
+                const imagens = await response.json();
+                const imageUrls = imagens.arquivos.map(file => ({
+                    url: file.url
+                }));
+
+                // Passa a URL das imagens para a página DetalhesImagem
                 navigation.navigate('DetalhesImagem', {
                     dataImagem: new Date(item.data_imagem).toLocaleDateString(),
                     coordenadas: {
@@ -109,6 +113,12 @@ const Historico: React.FC = () => {
                         oeste: item.coordenada_oeste,
                     },
                     coberturaNuvem: item.cloudPercentage,
+                    sombra: item.shadowPercentage,
+                    periodo: {
+                        inicio: new Date(item.startDate).toLocaleDateString(),
+                        fim: new Date(item.endDate).toLocaleDateString(),
+                    },
+                    imagens: imageUrls,
                 });
             } else {
                 console.error("Erro ao gerar novamente a consulta:", response.statusText);
@@ -121,11 +131,11 @@ const Historico: React.FC = () => {
             setLoadingGerarNovamente(false);  // Finaliza o carregamento
         }
     };
-    
+
 
     const renderItem = ({ item }: { item: Consulta }) => (
         <View style={styles.card}>
-            <Text style={styles.title}>{item.nome}</Text>
+            <Text style={styles.title}>Consulta: {item.id}</Text>
             <Text>Data da Imagem: {new Date(item.data_imagem).toLocaleDateString()}</Text>
             <Text>Norte: {item.coordenada_norte}</Text>
             <Text>Sul: {item.coordenada_sul}</Text>
@@ -158,7 +168,8 @@ const Historico: React.FC = () => {
                     data={consultas}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={renderItem}
-                    contentContainerStyle={styles.list}
+                    style={{ width: '100%' }}
+                    contentContainerStyle={{ paddingHorizontal: 0 }}
                 />
             )}
         </View>
@@ -169,8 +180,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative', // Adiciona a posição relativa para garantir que o loadingContainer seja posicionado corretamente
+        position: 'relative',
     },
     list: {
         paddingBottom: 20,
@@ -184,6 +194,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 4,
+        width: '100%',
+        alignSelf: 'stretch',
     },
     title: {
         fontSize: 16,
@@ -198,9 +210,10 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fundo semitransparente
-        zIndex: 100, // Garante que o indicador de carregamento fique sobre a lista
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        zIndex: 100,
     },
 });
+
 
 export default Historico;
