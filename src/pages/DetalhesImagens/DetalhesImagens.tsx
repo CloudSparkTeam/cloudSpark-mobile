@@ -1,115 +1,76 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView, Button, View, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { SafeAreaView, View, Alert, Button, PermissionsAndroid } from 'react-native';
+import RNFS from 'react-native-fs'; // Biblioteca para gerenciar arquivos
 import { ImageCarousel } from '../../components/ImageCarousel/ImageCarousel';
 import { ImageDetailsCard } from '../../components/ImageDetailsCard/ImageDetailsCard';
 import { FullScreenModal } from '../../components/FullScreenModal/FullScreenModal';
-import { fetchTreatedImages } from '../../services/apiService';
 import { styles } from './DetalhesImagens.styles';
 import { jwtDecode } from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from 'react-native-fs';  // Importa a biblioteca para manipulação de arquivos
-import { PermissionsAndroid } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Importa o Picker
 
 
 function DetalhesImagem({ route }) {
-    const { dataImagem, coordenadas, coberturaNuvem } = route.params;
-    const [images, setImages] = useState([]);
-    const [isFullScreen, setIsFullScreen] = useState(false);
+    const { dataImagem, coordenadas, coberturaNuvem, periodo, imagens } = route.params;
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
     const [userId, setUserId] = useState<number | null>(null);
     const [selectedOption, setSelectedOption] = useState('original'); // Estado para a opção selecionada
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
-    useEffect(() => {
-        const checkUserLoggedIn = async () => {
-            try {
-                const token = await AsyncStorage.getItem('userToken');
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    const userId = decodedToken.id;
-                    setUserId(userId);
-
-                    const response = await fetch(`http://10.0.2.2:3002/usuario/listar/${userId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-
-                    if (response.ok) {
-                        setIsUserLoggedIn(true);
-                        const data = await response.json();
-                        console.log("Dados do backend:", data);
-                    }
+    // Solicitar permissão para acessar o armazenamento
+    const requestPermissions = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                {
+                    title: 'Permissão de Armazenamento',
+                    message: 'Este aplicativo precisa de acesso ao armazenamento.',
+                    buttonPositive: 'OK',
                 }
-            } catch (error) {
-                console.error('Erro ao buscar dados do perfil:', error);
+            );
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                Alert.alert('Permissão necessária', 'Permissão para acessar o armazenamento foi negada.');
             }
-        };
-
-        checkUserLoggedIn();
-    }, []);
-
-    useEffect(() => {
-        if (userId !== null) {
-            const loadImages = async () => {
-                try {
-                    const data = await fetchTreatedImages(userId);
-                    console.log('Imagens carregadas:', data);
-                    setImages(data);
-                } catch (error) {
-                    console.error('Erro ao carregar as imagens:', error);
-                    Alert.alert(`Erro: ${error}`);
-                }
-            };
-            loadImages();
+        } catch (err) {
+            console.warn(err);
         }
-    }, [userId]);  // Dependência no userId
-
-    const openFullScreen = (index) => {
-        setSelectedIndex(index);
-        setIsFullScreen(true);
     };
 
-    const closeFullScreen = () => setIsFullScreen(false);
+    // Solicitar permissão ao carregar o componente
+    useEffect(() => {
+        requestPermissions();
+    }, []);
 
-    const onViewRef = useRef(({ viewableItems }) => {
-        if (viewableItems.length > 0) setSelectedIndex(viewableItems[0].index);
-    });
-    const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
+    const handleOptionChange = (itemValue) => {
+        setSelectedOption(itemValue);
+        // Lógica para alterar a imagem com base na opção selecionada
+        // Por exemplo, você pode alterar a URL da imagem ou aplicar filtros
+    };
 
-    const handleDownloadImage = async () => {
-        if (images[selectedIndex] && images[selectedIndex].url) {
-            const imageUrl = images[selectedIndex].url;
+    // Função para realizar o download da imagem
+    const handleDownloadImage = async (index) => {
+        if (imagens[index] && imagens[index].url) {
+            const imageUrl = imagens[index].url;
             const filename = imageUrl.split('/').pop();
-            const path = `${RNFS.ExternalDirectoryPath}/Download/${filename}`; // Caminho para a pasta de download
-    
-            console.log('Caminho da imagem:', path); // Verifique o caminho
-    
+            const path = `${RNFS.ExternalDirectoryPath}/Download/${filename}`;
+
             try {
-                // Verifique se a pasta "Download" existe, se não, crie-a
+                // Verificar ou criar diretório de download
                 const downloadDir = `${RNFS.ExternalDirectoryPath}/Download`;
                 const dirExists = await RNFS.exists(downloadDir);
                 if (!dirExists) {
-                    await RNFS.mkdir(downloadDir);  // Cria a pasta "Download" se não existir
-                    console.log('Pasta Download criada.');
+                    await RNFS.mkdir(downloadDir);
                 }
-    
+
                 // Baixar a imagem
                 const download = await RNFS.downloadFile({
                     fromUrl: imageUrl,
                     toFile: path,
                 }).promise;
-    
+
                 if (download.statusCode === 200) {
                     Alert.alert('Imagem baixada', `A imagem foi salva em: ${path}`);
-    
-                    // Verificar se o arquivo foi realmente salvo
-                    const fileExists = await RNFS.exists(path);
-                    console.log('Arquivo existe?', fileExists);  // Deve ser 'true'
-    
                 } else {
                     Alert.alert('Erro ao baixar', 'Não foi possível baixar a imagem.');
                 }
@@ -122,39 +83,29 @@ function DetalhesImagem({ route }) {
         }
     };
 
-    const requestPermissions = async () => {
-    try {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-                title: 'Permissão de Armazenamento',
-                message: 'Este aplicativo precisa de acesso ao armazenamento.',
-                buttonPositive: 'OK', // Botão para conceder a permissão
-            }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Permissão de armazenamento concedida');
-        } else {
-            console.log('Permissão de armazenamento negada');
-        }
-    } catch (err) {
-        console.warn(err);
-    }
-};
-
-useEffect(() => {
-    requestPermissions();
-}, []);
-    
-    const handleOptionChange = (itemValue) => {
-        setSelectedOption(itemValue);
-        // Lógica para alterar a imagem com base na opção selecionada
-        // Por exemplo, você pode alterar a URL da imagem ou aplicar filtros
+    // Abrir imagem em tela cheia
+    const openFullScreen = (index) => {
+        setSelectedIndex(index);
+        setIsFullScreen(true);
     };
+
+    // Fechar imagem em tela cheia
+    const closeFullScreen = () => setIsFullScreen(false);
+
+    // Configurações do carrossel
+    const onViewRef = useRef(({ viewableItems }) => {
+        if (viewableItems.length > 0) setSelectedIndex(viewableItems[0].index);
+    });
+    const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
     return (
         <SafeAreaView style={styles.container}>
-            <ImageCarousel images={images} onImagePress={openFullScreen} />
+            {/* Carrossel de Imagens com botão de download integrado */}
+            <ImageCarousel
+                images={imagens}
+                onImagePress={openFullScreen}
+                onDownloadPress={(index) => handleDownloadImage(index)} // Função de download
+            />
             <Picker
                 selectedValue={selectedOption}
                 onValueChange={handleOptionChange}
@@ -163,17 +114,25 @@ useEffect(() => {
                 <Picker.Item label="Original" value="original" />
                 <Picker.Item label="Máscara de Sombras" value="shadow_mask" />
                 <Picker.Item label="Máscara de Nuvem" value="cloud_mask" />
-                <Picker.Item label="Ambos" value="both_masks" />
             </Picker>
-            <ImageDetailsCard dataImagem={dataImagem} coordenadas={coordenadas} coberturaNuvem={coberturaNuvem} />
-            {isUserLoggedIn && (
-                <View style={styles.downloadButtonContainer}>
-                    <Button title="Baixar Imagem" onPress={handleDownloadImage} />
-                </View>
-            )}
+
+            {/* Detalhes da Imagem */}
+            <ImageDetailsCard
+                dataImagem={dataImagem}
+                coordenadas={coordenadas}
+                coberturaNuvem={coberturaNuvem}
+                periodo={periodo}
+            />
+
+            {/* Botão de Download Geral (opcional) */}
+            {/* <View style={styles.downloadButtonContainer}>
+                <Button title="Baixar Imagem Atual" onPress={() => handleDownloadImage(selectedIndex)} />
+            </View> */}
+
+            {/* Modal de Tela Cheia */}
             <FullScreenModal
                 visible={isFullScreen}
-                images={images}
+                images={imagens}
                 selectedIndex={selectedIndex}
                 onClose={closeFullScreen}
                 onViewRef={onViewRef}
