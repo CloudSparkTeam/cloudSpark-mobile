@@ -10,4 +10,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
     },
+    picker: {
+        height: 50,
+        width: '55%',
+        marginVertical: 10,
+        marginHorizontal: 25,
+    },
 });

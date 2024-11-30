@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import styles from '../GoogleMaps/GoogleMaps.styles';
 
 interface ClearButtonProps {
@@ -8,7 +8,12 @@ interface ClearButtonProps {
 
 const ClearButton: React.FC<ClearButtonProps> = ({ onPress }) => (
   <View style={styles.buttonContainer}>
-    <Button title="Limpar Pontos" onPress={onPress} />
+    <TouchableOpacity
+      style={[styles.customButton, { backgroundColor: 'yellow' }]} // Fundo amarelo
+      onPress={onPress}
+    >
+      <Text style={{ color: 'black', fontWeight: 'bold' }}>Limpar pontos</Text>
+    </TouchableOpacity>
   </View>
 );
 
