@@ -5,10 +5,17 @@ import { ImageCarousel } from '../../components/ImageCarousel/ImageCarousel';
 import { ImageDetailsCard } from '../../components/ImageDetailsCard/ImageDetailsCard';
 import { FullScreenModal } from '../../components/FullScreenModal/FullScreenModal';
 import { styles } from './DetalhesImagens.styles';
+import { jwtDecode } from 'jwt-decode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker'; // Importa o Picker
+
 
 function DetalhesImagem({ route }) {
     const { dataImagem, coordenadas, coberturaNuvem, periodo, imagens } = route.params;
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+    const [userId, setUserId] = useState<number | null>(null);
+    const [selectedOption, setSelectedOption] = useState('original'); // Estado para a opção selecionada
     const [isFullScreen, setIsFullScreen] = useState(false);
 
     // Solicitar permissão para acessar o armazenamento
@@ -34,6 +41,12 @@ function DetalhesImagem({ route }) {
     useEffect(() => {
         requestPermissions();
     }, []);
+
+    const handleOptionChange = (itemValue) => {
+        setSelectedOption(itemValue);
+        // Lógica para alterar a imagem com base na opção selecionada
+        // Por exemplo, você pode alterar a URL da imagem ou aplicar filtros
+    };
 
     // Função para realizar o download da imagem
     const handleDownloadImage = async (index) => {
@@ -94,6 +107,7 @@ function DetalhesImagem({ route }) {
                 onDownloadPress={(index) => handleDownloadImage(index)} // Função de download
             />
             {/* <Picker
+
                 selectedValue={selectedOption}
                 onValueChange={handleOptionChange}
                 style={styles.picker} // Adicione estilos conforme necessário
@@ -102,6 +116,7 @@ function DetalhesImagem({ route }) {
                 <Picker.Item label="Máscara de Sombras" value="shadow_mask" />
                 <Picker.Item label="Máscara de Nuvem" value="cloud_mask" />
             </Picker> */}
+
 
             {/* Detalhes da Imagem */}
             <ImageDetailsCard
