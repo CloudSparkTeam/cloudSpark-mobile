@@ -106,7 +106,8 @@ function DetalhesImagem({ route }) {
                 onImagePress={openFullScreen}
                 onDownloadPress={(index) => handleDownloadImage(index)} // Função de download
             />
-            <Picker
+            {/* <Picker
+
                 selectedValue={selectedOption}
                 onValueChange={handleOptionChange}
                 style={styles.picker} // Adicione estilos conforme necessário
@@ -114,7 +115,8 @@ function DetalhesImagem({ route }) {
                 <Picker.Item label="Original" value="original" />
                 <Picker.Item label="Máscara de Sombras" value="shadow_mask" />
                 <Picker.Item label="Máscara de Nuvem" value="cloud_mask" />
-            </Picker>
+            </Picker> */}
+
 
             {/* Detalhes da Imagem */}
             <ImageDetailsCard
